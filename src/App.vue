@@ -1,28 +1,29 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+      <BattleGround></BattleGround>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import BattleGround from "./components/BattleGround";
 
 export default {
-  name: 'app',
-  components: {
-    HelloWorld
-  }
-}
+    name: "app",
+    components: {
+        BattleGround
+    }
+};
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css?family=Press+Start+2P");
+
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+    font-family: "Press Start 2P", cursive;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    /* color: #2c3e50; */
+    margin-top: 60px;
 }
 </style>
