@@ -19,7 +19,7 @@ export default {
     height: 400px;
 }
 .poke-sprite-img {
-    width: 200%;
+    min-width: 200%;
     height: 200%;
     image-rendering: pixelated;
     position: relative;

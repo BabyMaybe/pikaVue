@@ -15,59 +15,65 @@
     </div>
     <button @click="handleAttack(player,wild)">Attack!</button>
 
-    <TextFrame>
-      <TextFrame>Text</TextFrame>
-    </TextFrame>
+    <MenuScreen></MenuScreen>
+    <MoveScreen></MoveScreen>
+    <MessageScreen></MessageScreen>
+
+
   </div>
 </template>
 
 <script>
 import Stats from "./Stats";
-import TextFrame from "./TextFrame";
 import PokeSprite from "./PokeSprite";
+import MenuScreen from "./MenuScreen";
+import MoveScreen from "./MoveScreen";
+import MessageScreen from "./MessageScreen";
+
 import Pokemon from "../data/Pokemon.js";
 
 export default {
-  name: "BattleGround",
-  components: {
-    Stats,
-    TextFrame,
-    PokeSprite
-  },
-  data: function() {
-    return {
-      player: new Pokemon({ hp: 100, attack: 15, defense: 20 }),
-      wild: new Pokemon({ hp: 100, attack: 25, defense: 10 })
-    };
-  },
-  methods: {
-    handleAttack(attacker, defender) {
-      console.log("defender health: ", defender.stats.hp);
-      attacker.attack(defender);
-      console.log("defender health: ", defender.stats.hp);
+    name: "BattleGround",
+    components: {
+        Stats,
+        PokeSprite,
+        MenuScreen,
+        MoveScreen,
+        MessageScreen
+    },
+    data: function() {
+        return {
+            player: new Pokemon({ hp: 100, attack: 15, defense: 20 }),
+            wild: new Pokemon({ hp: 100, attack: 25, defense: 10 }),
+            menuState: { menu: true, fight: false, item: false, run: false, pkmn: false }
+        };
+    },
+    methods: {
+        handleAttack(attacker, defender) {
+            attacker.attack(defender);
+        }
     }
-  }
 };
 </script>
 
 <style>
 .battleground {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 .poke-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
 }
 
 .wild-pokemon > .stats {
-  border-left: solid black 5px;
+    border-left: solid black 5px;
 }
 .player {
-  align-items: flex-end;
+    align-items: flex-end;
 }
 .player > .stats {
-  border-right: solid black 5px;
+    border-right: solid black 5px;
 }
 </style>
