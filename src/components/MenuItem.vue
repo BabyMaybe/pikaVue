@@ -1,30 +1,32 @@
 <template>
-    <div class="menu-item"><span>{{text}}</span></div>
+  <div class="menu-item">
+    <span>{{text}}</span>
+  </div>
 </template>
 
 <script>
 export default {
-    name: "MenuItem",
-    props: {
-        text: String
-    }
+  name: "MenuItem",
+  props: {
+    text: String
+  }
 };
 </script>
 
 <style>
 .menu-item {
-    flex: 1 1 50%;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    cursor: pointer;
-    padding: 25px;
+  flex: 1 1 50%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: 25px;
 }
 
 .menu-item:hover {
-    background: black;
-    color: white;
+  background: black;
+  color: white;
 }
 </style>
