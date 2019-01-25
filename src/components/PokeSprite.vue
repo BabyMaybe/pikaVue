@@ -15,8 +15,8 @@ export default {
 
 <style>
 .poke-sprite {
-    width: 400px;
-    height: 400px;
+    width: 300px;
+    height: 300px;
 }
 .poke-sprite-img {
     min-width: 200%;

@@ -20,7 +20,7 @@ export default {
 
 #app {
     font-family: "Press Start 2P", monospace;
-    -webkit-font-smoothing: antialiased;
+    -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     /* color: #2c3e50; */

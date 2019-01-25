@@ -1,10 +1,9 @@
 export default class Pokemon {
     constructor(params) {
-        console.log("making a ", params.name);
         this.name = params.name;
         this.type = params.type;
         this.xp = 0;
-        this.lvl = 100;
+        this.lvl = params.lvl;
         this.stats = {
             baseStats: {
                 hp: params.baseStats.hp,
@@ -35,25 +34,25 @@ export default class Pokemon {
                 hp: 0
             }
         };
-        console.log("made stats");
-        console.log(this.stats);
-
         this.calculateHealthIV(this.stats.IVs);
-        console.log("added health iv");
-        console.log(this.stats);
         this.updateStats();
-        console.log("added currentStats");
-        console.log(this.stats);
     }
 
     calculateHealthIV(IVs) {
         let hp = 0;
-        console.log(IVs);
         hp += IVs.attack % 2 !== 0 ? 8 : 0;
         hp += IVs.defense % 2 !== 0 ? 4 : 0;
         hp += IVs.speed % 2 !== 0 ? 2 : 0;
         hp += IVs.special % 2 !== 0 ? 1 : 0;
         IVs.hp = hp;
+    }
+
+    damage(num) {
+        this.stats.hp -= num;
+    }
+
+    heal(num) {
+        this.stats.hp += num;
     }
 
     updateHealth(num) {
@@ -75,11 +74,10 @@ export default class Pokemon {
         this.stats.currentStats.speed = this.complicatedMath("speed");
         this.stats.currentStats.special = this.complicatedMath("special");
         this.stats.currentStats.hp = this.complicatedMath("hp") + this.lvl + 5;
+        this.stats.hp = this.stats.currentStats.hp;
     }
 
     complicatedMath(stat) {
-        console.log("doing complicated math for ", stat);
-        console.log(this);
         return (
             Math.floor(
                 (((this.stats.baseStats[stat] + this.stats.IVs[stat]) * 2 +

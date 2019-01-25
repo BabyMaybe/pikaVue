@@ -1,7 +1,7 @@
 <template>
   <div class="battleground">
     <div class="wild-pokemon poke-row">
-      <Stats :level="wild.lvl" :pokemon="wild.name" :hp="wild.stats.currentStats.hp"/>
+      <Stats :pokemon="wild" :hp="wild.stats.hp"/>
       <PokeSprite
         :url="'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png'"
       />
@@ -11,12 +11,12 @@
       <PokeSprite
         :url="'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/25.png'"
       />
-      <Stats :level="player.lvl" :pokemon="player.name" :hp="player.stats.currentStats.hp"/>
+      <Stats :pokemon="player"/>
     </div>
-    <button @click="handleAttack(player,wild)">Attack!</button>
+    <!-- <button @click="handleAttack(player,wild)">Attack!</button> -->
 
     <MenuScreen @menuSelected="setScreen" v-if="menuState.menu"></MenuScreen>
-    <MoveScreen class="space" v-if="menuState.fight"></MoveScreen>
+    <MoveScreen class="space" v-if="menuState.fight" @attack="handleAttack"></MoveScreen>
     <MessageScreen v-if="menuState.run"></MessageScreen>
   </div>
 </template>
@@ -51,7 +51,8 @@ export default {
                     defense: 40,
                     special: 50,
                     speed: 90
-                }
+                },
+                lvl: 10
             }),
             wild: new Pokemon({
                 name: "Charmander",
@@ -62,17 +63,41 @@ export default {
                     defense: 43,
                     special: 50,
                     speed: 65
-                }
+                },
+                lvl: 100
             }),
             menuState: { menu: true, fight: false, item: false, run: false, pkmn: false }
         };
     },
     methods: {
-        handleAttack(attacker, defender) {
-            // attacker.attack(defender);
-
-            console.log("attacking");
+        handleAttack(move) {
+            this.calcAttack(this.player, this.wild, move);
         },
+        calcAttack(attacker, defender, move) {
+            const level = attacker.lvl;
+            const power = move.power;
+            const attack = attacker.stats.currentStats.attack;
+            const defense = defender.stats.currentStats.defense;
+
+            const rand = (Math.floor(Math.random() * (255 - 217 + 1)) + 217) / 255;
+            const STAB = move.type === attacker.type ? 1.5 : 1;
+            const typeBonus = this.calcTypeBonus(move.type, defender.type);
+
+            const modifier = rand * STAB * typeBonus;
+
+            const damage = Math.round((2 * level / 5 * power * (attack / defense) / 50 + 2) * modifier);
+            console.log("attacking for ", damage, " damage");
+            defender.damage(damage);
+        },
+
+        calcTypeBonus(moveType, pkmnType) {
+            // return either .5, 1, 2, 4 based on type lookup
+            if (moveType === "water") {
+                return 2;
+            }
+            return 1;
+        },
+
         setScreen(screen) {
             for (var menuItem in this.menuState) {
                 this.menuState[menuItem] = false;
