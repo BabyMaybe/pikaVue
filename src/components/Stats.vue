@@ -9,37 +9,37 @@
 <script>
 import HealthBar from "./HealthBar";
 export default {
-    name: "Stats",
-    props: {
-        pokemon: Object
-        // hp: Number
-    },
-    // data: function() {
-    //     return {
-    //         name: "----",
-    //         lvl: 0
-    //         // hp: 0
-    //     };
-    // },
-    components: { HealthBar },
-    created: function() {
-        console.log(this.pokemon);
-        // this.name = this.pokemon.name;
-        // this.lvl = this.pokemon.lvl;
-        // this.hp = this.pokemon.stats.hp;
-    }
+  name: "Stats",
+  props: {
+    pokemon: Object
+    // hp: Number
+  },
+  // data: function() {
+  //     return {
+  //         name: "----",
+  //         lvl: 0
+  //         // hp: 0
+  //     };
+  // },
+  components: { HealthBar }
+  // created: function() {
+  //     console.log(this.pokemon);
+  //     // this.name = this.pokemon.name;
+  //     // this.lvl = this.pokemon.lvl;
+  //     // this.hp = this.pokemon.stats.hp;
+  // }
 };
 </script>
 
 <style>
 h1 {
-    font-weight: normal;
+  font-weight: normal;
 }
 .stats {
-    display: flex;
-    flex-direction: column;
-    width: 500px;
-    border-bottom: solid black 5px;
-    padding: 5px 20px;
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+  border-bottom: solid black 5px;
+  padding: 5px 20px;
 }
 </style>

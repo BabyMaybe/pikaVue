@@ -3,7 +3,7 @@
     <transition name="scroll-away">
       <span class="message" v-if="scroll">{{messsageText}}</span>
     </transition>
-    <div class="continue" @click="scroll = !scroll">v</div>
+    <div class="continue" @click="scroll = !scroll">></div>
   </TextFrame>
 </template>
 
@@ -37,6 +37,7 @@ export default {
   right: 10px;
   animation: blink 1.5s ease-in-out infinite alternate;
   cursor: pointer;
+  transform: rotate(90deg);
 }
 
 .continue:hover {

@@ -13,7 +13,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .menu-item {
   flex: 1 1 50%;
   text-align: center;
