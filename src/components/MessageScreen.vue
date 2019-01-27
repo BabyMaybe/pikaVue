@@ -1,9 +1,9 @@
 <template>
   <TextFrame class="message-screen">
     <transition name="scroll-away">
-      <span class="message" v-if="scroll">{{messsageText}}</span>
+      <span class="message" v-if="scroll">{{messageText}}</span>
     </transition>
-    <div class="continue" @click="scroll = !scroll">></div>
+    <div class="continue" @click="nextMessage">></div>
   </TextFrame>
 </template>
 
@@ -11,73 +11,77 @@
 import TextFrame from "./TextFrame";
 
 export default {
-  name: "MessageScreen",
-  components: {
-    TextFrame
-  },
-  data: function() {
-    return {
-      scroll: true,
-      messsageText: "Wild CHARMANDER appeared!"
-    };
-  }
+    name: "MessageScreen",
+    components: {
+        TextFrame
+    },
+    data: function() {
+        return {
+            scroll: true
+        };
+    },
+    props: {
+        messageText: String
+    },
+    methods: {
+        nextMessage: function() {
+            this.scroll = false;
+            this.$emit("nextClicked");
+        }
+    },
+    watch: {
+        messageText: function() {
+            setTimeout(() => {
+                this.scroll = true;
+            }, 500);
+        }
+    }
 };
 </script>
 
 <style>
 .message-screen {
-  height: 200px;
-  position: relative;
-  overflow: hidden;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
 }
 
 .continue {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  animation: blink 1.5s ease-in-out infinite alternate;
-  cursor: pointer;
-  transform: rotate(90deg);
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    animation: blink 4s ease-in-out infinite alternate;
+    cursor: pointer;
+    transform: rotate(90deg);
 }
 
+.p {
+    bottom: 50px;
+    transform: rotate(0);
+    animation: none;
+}
 .continue:hover {
-  animation: none;
+    animation: none;
 }
 .message {
-  position: relative;
-  top: 0;
-}
-@keyframes blink {
-  0% {
-    opacity: 1;
-  }
-  30% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+    position: relative;
+    top: 0;
 }
 
 .scroll-away-enter {
-  top: 125%;
-  opacity: 0;
+    top: 125%;
 }
 .scroll-away-leave-to {
-  top: -25%;
-  opacity: 0;
+    top: -25%;
 }
 
 .scroll-away-enter-to,
 .scroll-away-leave {
-  top: 0;
-  opacity: 1;
+    top: 0;
 }
 
+.scroll-away-leave-active,
 .scroll-away-enter-active {
-  transition: all 1.25s ease-out;
-}
-.scroll-away-leave-active {
-  transition: all 1s ease-out;
+    transition: all 0.5s ease-out;
 }
 </style>

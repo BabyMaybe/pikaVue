@@ -4,6 +4,7 @@
         <MoveItem v-for="move in moves" :key="move.name" :move="move" @moveHover="moveHover"
         @moveLeave="resetDisplay" @click.native="sendAttack(move)"></MoveItem>
     </TextFrame>
+
     <TextFrame class="info-screen">
       <span class="info-stat">{{display.move}}</span>
       <span class="info-stat">TYPE/{{display.type}}</span>
@@ -56,8 +57,6 @@ export default {
             this.display.ppMax = "--";
         },
         sendAttack: function(move) {
-            console.log("attacking with ", move.name);
-
             this.$emit("attack", move);
         }
     },
@@ -109,12 +108,14 @@ export default {
 
 <style>
 .info-screen {
-    height: 50px;
+    height: 100px;
     display: flex;
     justify-content: space-around;
     align-items: center;
     font-size: 20px;
     text-transform: uppercase;
+    width: 100%;
+    box-sizing: border-box;
 }
 .info-stat {
     flex: 1;
@@ -125,5 +126,7 @@ export default {
     flex-wrap: wrap;
     align-items: stretch;
     justify-content: space-around;
+    width: 100%;
+    box-sizing: border-box;
 }
 </style>

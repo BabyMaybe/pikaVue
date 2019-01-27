@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Async Test</title>
+        <style>
+            .container {
+                border: solid black 5px;
+                height: 200px;
+                display: flex;
+                justify-content: space-around;
+            }
+
+            .square {
+                border: solid black 3px;
+                height: 50px;
+                width: 50px;
+                box-sizing: border-box;
+                position: relative;
+                top: 0;
+                transition: all 1s;
+            }
+            .bottom {
+                top: 150px;
+            }
+            #red {
+                background: red;
+            }
+
+            #green {
+                background: lime;
+            }
+
+            #blue {
+                background: blue;
+            }
+
+            #message {
+                text-align: center;
+            }
+
+            button {
+                margin: 0 auto;
+                font-size: 30px;
+                border-radius: 50px;
+                padding: 15px;
+                display: block;
+                border: solid black 5px;
+                cursor: pointer;
+                outline: none;
+            }
+            button:hover {
+                background: lightgrey;
+            }
+            button:active {
+                background: grey;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="square" id="red"></div>
+            <div class="square" id="green"></div>
+            <div class="square" id="blue"></div>
+        </div>
+
+        <h1 id="message">This is where message text appears</h1>
+        <button id="btn">Click Me</button>
+        <script>
+            const red = document.getElementById("red");
+            const green = document.getElementById("green");
+            const blue = document.getElementById("blue");
+            const msg = document.getElementById("message");
+            const btn = document.getElementById("btn");
+
+            function wait2Seconds() {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve("resolved");
+                    }, 2000);
+                });
+            }
+
+            async function asyncCall() {
+                console.log("calling");
+                var result = await resolveAfter2Seconds();
+                console.log(result);
+                // expected output: 'resolved'
+            }
+
+            let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+            function waitForClick(e) {
+                console.log(e.target);
+                // return new Promise(resolve => {
+
+                // })
+            }
+            btn.addEventListener("click", waitForClick);
+
+            function resolvePromise(p) {
+                p.resolve();
+            }
+
+            function myPromiseGenerator() {
+                return new Promise((resolve, reject) => {
+                    btn.addEventListener("click", function(e) {
+                        resolve("the button was clicked and the promise is resolved");
+                    });
+                });
+            }
+
+            // async function clickThings() {
+            //     function waitClick(e) {
+            //         return new Promise() {
+            //             resolve('clicked');
+            //         }
+            //     }
+            // }
+
+            async function doThings() {
+                btn.innerText = "Move Red";
+                await myPromiseGenerator();
+                msg.innerText = "moving red";
+                red.classList.add("bottom");
+                btn.innerText = "Move green";
+                await myPromiseGenerator();
+                msg.innerText = "moving green";
+                green.classList.add("bottom");
+                btn.innerText = "Move blue";
+                await myPromiseGenerator();
+                msg.innerText = "moving blue";
+                blue.classList.add("bottom");
+                await wait(1000);
+                msg.innerText = "finished moving";
+            }
+            doThings();
+        </script>
+    </body>
+</html>
