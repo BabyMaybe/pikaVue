@@ -10,11 +10,11 @@
       />
     </div>
     <div class="controls">
-      <div class="controls-button up" :class="{'hide':index === 0}" @click="handleClick(-1)">&gt;</div>
+      <div class="controls-button up" :class="{'hide':index === 0}" @click="handleNav(-1)">&gt;</div>
       <div
         class="controls-button down"
         :class="{'hide':index >= filteredItems.length - 4}"
-        @click="handleClick(1)"
+        @click="handleNav(1)"
       >&gt;</div>
     </div>
   </TextFrame>
@@ -36,12 +36,12 @@ export default {
                 { name: "potion", quantity: 10 },
                 { name: "antidote", quantity: 7 },
                 { name: "ether", quantity: 3 },
-                { name: "elixer", quantity: 13 },
-                { name: "full heal", quantity: 10 },
+                // { name: "elixir", quantity: 13 },
+                // { name: "full heal", quantity: 10 },
                 { name: "ice heal", quantity: 8 },
                 { name: "paralyze heal", quantity: 6 },
-                { name: "revive", quantity: 2 },
-                { name: "super potion", quantity: 4 },
+                // { name: "revive", quantity: 2 },
+                // { name: "super potion", quantity: 4 },
                 { name: "awakening", quantity: 13 },
                 { name: "burn heal", quantity: 5 }
             ],
@@ -50,9 +50,15 @@ export default {
     },
     methods: {
         selectItem: function(item) {
-            item.quantity--;
+            if (item.quantity >= 1) {
+                this.$emit("itemUsed", item.name);
+                item.quantity = Math.max(0, item.quantity - 1);
+            } else {
+                const index = this.itemList.indexOf(item);
+                this.itemList.splice(index, 1);
+            }
         },
-        handleClick: function(t) {
+        handleNav: function(t) {
             this.index = Math.min(Math.max(this.index + t, 0), this.itemList.length - 4);
         }
     },

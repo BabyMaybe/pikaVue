@@ -5,12 +5,12 @@
     <PokemonRow :pokemon="player" :player="true" img='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/25.png' />
 
     <div class="menu-space">
-      <MenuScreen @menuSelected="setScreen" v-show="menuState.menu"/>
+      <MenuScreen @menuSelected="handleMenuSelected" v-show="menuState.menu" :menuItems="menuItems" />
       <MoveScreen v-show="menuState.fight" @attack="handleAttack"/>
-      <MessageScreen v-show="menuState.run"/>
-      <InventoryScreen v-show="menuState.item"/>
+      <!-- <MessageScreen v-show="menuState.run"/> -->
+      <InventoryScreen v-show="menuState.item" @itemUsed="handleItem"/>
       <PokemonScreen v-show="menuState.pkmn" :pokemon="player"/>
-      <MessageScreen v-show="menuState.msg" :messageText="turn.message" @nextClicked="handleNext" :prom="turn.prom"/>
+      <MessageScreen v-show="menuState.msg" :messageText="turn.message" @nextClicked="handleNext" />
 
       <div class="b" @click="setScreen('menu')" :class="{hide: (menuState.menu || menuState.msg)}">
         <span>b</span>
@@ -31,6 +31,7 @@ import PokemonScreen from "./PokemonScreen";
 import PokemonRow from "./PokemonRow";
 
 import { Pokemon, Move, getRandom } from "../data/Pokemon.js";
+import { itemDB } from "../data/Items.js";
 
 export default {
     name: "BattleGround",
@@ -102,7 +103,7 @@ export default {
                     special: 50,
                     speed: 65
                 },
-                lvl: 60,
+                lvl: 100,
                 moveSet: [
                     new Move({
                         move: {
@@ -155,13 +156,20 @@ export default {
                 msg: false
             },
             turn: {
+                playerAction: function() {},
                 playerMove: null,
                 wildMove: null,
                 message: "",
-                messages: [],
-                eventQueue: [],
-                ps: []
-            }
+                runAttempts: 0,
+                battleOver: false,
+                item: null
+            },
+            menuItems: [
+                { text: "fight", event: "fightSelected" },
+                { text: "pkmn", event: "pkmnSelected" },
+                { text: "item", event: "itemSelected" },
+                { text: "run", event: "runSelected" }
+            ]
         };
     },
     methods: {
@@ -179,8 +187,160 @@ export default {
 
         handleAttack(move) {
             this.turn.playerMove = move;
+            this.turn.playerAction = this.battleTurn;
             this.processTurn();
         },
+
+        handleMenuSelected(menuItem) {
+            if (["fight", "pkmn", "item"].includes(menuItem.text)) {
+                this.setScreen(menuItem.text);
+            }
+
+            if (["run"].includes(menuItem.text)) {
+                this.turn.playerAction = this.runTurn;
+                this.processTurn();
+            }
+        },
+
+        handleNext() {
+            let p = this.turn.defered;
+            p.resolve("resolving click!");
+        },
+
+        handleItem(item) {
+            const selected = itemDB[item];
+            console.log(selected);
+            this.turn.item = selected;
+            this.turn.playerAction = this.itemTurn;
+            this.processTurn();
+        },
+
+        setScreen(screen) {
+            for (var menuItem in this.menuState) {
+                this.menuState[menuItem] = false;
+            }
+            this.menuState[screen.toLowerCase()] = true;
+        },
+
+        async processTurn() {
+            //generate wild move
+            this.turn.wildMove = this.wild.moveSet[getRandom(0, 3)];
+
+            //determine move order
+            const moveOrder = [
+                { pokemon: this.player, move: this.turn.playerMove },
+                { pokemon: this.wild, move: this.turn.wildMove }
+            ].sort((a, b) => {
+                b.pokemon.stats.currentStats.speed - a.pokemon.stats.currentStats.speed;
+            });
+
+            // --- pokemon 1 ---
+            const firstPokemon = moveOrder[0].pokemon;
+            const secondPokemon = moveOrder[1].pokemon;
+            const firstMove = moveOrder[0].move;
+            const secondMove = moveOrder[1].move;
+
+            await this.turn.playerAction(firstPokemon, secondPokemon, firstMove);
+            // await this.battleTurn(firstPokemon, secondPokemon, firstMove);
+            //--- pokemon 2 --- //
+            await this.battleTurn(secondPokemon, firstPokemon, secondMove);
+
+            this.setScreen("menu");
+        },
+
+        async battleTurn(attacker, defender, move) {
+            if (attacker.checkFaint() || this.turn.battleOver) {
+                return;
+            }
+
+            this.turn.message = `${attacker.name.toUpperCase()} used ${move.name.toUpperCase()}!`;
+            this.setScreen("msg");
+            await this.waitForClick();
+
+            //calculate damage
+            let damage = this.calcAttack(attacker, defender, move);
+
+            //apply damage
+            defender.damage(damage);
+
+            //display secondary text (status, crit, effictive)
+            this.turn.message = `${move.name.toUpperCase()} did ${damage} damage!`;
+            await this.waitForClick();
+
+            //check for faint
+
+            if (defender.checkFaint()) {
+                this.turn.message = `${defender.name} fainted!`;
+                defender.faintTransition = true;
+                await this.waitForClick();
+                defender.applyStatus("fainted");
+                this.endBattle();
+            }
+        },
+
+        async runTurn() {
+            this.turn.runAttempts++;
+            const a = this.player.stats.currentStats.speed;
+            const b = (this.wild.stats.currentStats.speed / 4) % 256;
+            const c = this.turn.runAttempts;
+            let success = false;
+            if (b === 0) {
+                console.log("0 mod success");
+
+                success = true;
+            } else {
+                const f = (a * 32 / b + 30) * c;
+
+                if (f > 255) {
+                    console.log("high f success");
+                    success = true;
+                } else {
+                    const challenge = getRandom(0, 255);
+                    if (f > challenge) {
+                        console.log("challenge success");
+                        success = true;
+                    }
+                }
+            }
+            const msg = success ? "Got away safely!" : "Can't escape!";
+            this.setScreen("msg");
+            this.turn.message = msg;
+
+            await this.waitForClick();
+            if (success) {
+                this.endBattle();
+            }
+        },
+
+        async itemTurn() {
+            console.log("using item");
+            this.setScreen("msg");
+            this.turn.message = `Used ${this.turn.item.name.toUpperCase()} on ${this.player.name.toUpperCase()}`;
+            await this.waitForClick();
+            const recovered = this.player.heal(this.turn.item.amount);
+
+            if (recovered === 0) {
+                this.turn.message = this.turn.item.failText(this.player);
+            } else {
+                this.turn.message = this.turn.item.successText(this.player, recovered);
+            }
+            await this.waitForClick();
+        },
+
+        endBattle() {
+            console.log("battle over");
+            this.turn.battleOver = true;
+            //victory/defeat text [ ]
+            //pokemon out [x]
+            //reset turn values?
+            //gain evs
+            //gain experience
+            //check level up
+            //back to menu [ ] - need new menu
+            //generate new pokemon
+            this.setScreen("menu");
+        },
+
         calcAttack(attacker, defender, move) {
             const level = attacker.lvl;
             const power = move.power;
@@ -204,130 +364,6 @@ export default {
                 return 2;
             }
             return 1;
-        },
-
-        setScreen(screen) {
-            for (var menuItem in this.menuState) {
-                this.menuState[menuItem] = false;
-            }
-            this.menuState[screen.toLowerCase()] = true;
-        },
-
-        handleNext() {
-            let p = this.turn.defered;
-            p.resolve("resolving click!");
-        },
-
-        async processTurn() {
-            //generate wild move
-            this.turn.wildMove = this.wild.moveSet[getRandom(0, 3)];
-
-            //determine move order
-            const moveOrder = [
-                { pokemon: this.player, move: this.turn.playerMove },
-                { pokemon: this.wild, move: this.turn.wildMove }
-            ].sort((a, b) => {
-                b.pokemon.stats.currentStats.speed - a.pokemon.stats.currentStats.speed;
-            });
-
-            // --- pokemon 1 ---
-            //display attack text
-            const firstPokemon = moveOrder[0].pokemon;
-            const secondPokemon = moveOrder[1].pokemon;
-
-            // this.turn.message = `${firstPokemon.name} used ${moveOrder[0].move.name}`;
-            // this.setScreen("msg");
-            // await this.waitForClick();
-
-            // //calculate damage
-            // let damage = this.calcAttack(firstPokemon, moveOrder[1].pokemon, moveOrder[0].move);
-
-            // //apply damage
-            // secondPokemon.damage(damage);
-
-            // //display secondary text (status, crit, effictive)
-            // this.turn.message = `${moveOrder[0].move.name} did ${damage} damage`;
-            // await this.waitForClick();
-
-            // //check for faint
-
-            // if (secondPokemon.checkFaint()) {
-            //     this.turn.message = `${secondPokemon.name} fainted!`;
-            //     secondPokemon.faintTransition = true;
-            //     await this.waitForClick();
-            //     secondPokemon.applyStatus("fainted");
-            //     this.endBattle();
-            //     return;
-            //     // skip everything else
-            // }
-            await this.battleTurn(firstPokemon, secondPokemon, moveOrder[0].move);
-            //--- pokemon 2 --- //
-            await this.battleTurn(secondPokemon, firstPokemon, moveOrder[1].move);
-            // //display attack text
-            // this.turn.message = `${secondPokemon.name} used ${moveOrder[1].move.name}`;
-            // await this.waitForClick();
-
-            // //calculate damage
-            // damage = this.calcAttack(secondPokemon, firstPokemon, moveOrder[1].move);
-            // //apply damage
-            // firstPokemon.damage(damage);
-
-            // //display secondary text (status, crit, effictive)
-            // this.turn.message = `${moveOrder[1].move.name} did ${damage} damage`;
-            // await this.waitForClick();
-
-            // //check for faint
-
-            // if (firstPokemon.checkFaint()) {
-            //     this.turn.message = `${firstPokemon.name} fainted!`;
-            //     firstPokemon.faintTransition = true;
-            //     await this.waitForClick();
-            //     firstPokemon.applyStatus("fainted");
-            //     this.endBattle();
-            //     return;
-            // }
-            //return to menu
-            this.setScreen("menu");
-        },
-
-        async battleTurn(attacker, defender, move) {
-            if (attacker.checkFaint()) {
-                return;
-            }
-
-            this.turn.message = `${attacker.name.toUpperCase()} used ${move.name.toUpperCase()}`;
-            this.setScreen("msg");
-            await this.waitForClick();
-
-            //calculate damage
-            let damage = this.calcAttack(attacker, defender, move);
-
-            //apply damage
-            defender.damage(damage);
-
-            //display secondary text (status, crit, effictive)
-            this.turn.message = `${move.name} did ${damage} damage`;
-            await this.waitForClick();
-
-            //check for faint
-
-            if (defender.checkFaint()) {
-                this.turn.message = `${defender.name} fainted!`;
-                defender.faintTransition = true;
-                await this.waitForClick();
-                defender.applyStatus("fainted");
-                this.endBattle();
-            } else {
-                return;
-            }
-        },
-
-        endBattle() {
-            console.log("battle over");
-            //victory/defeat text
-            //pokemon out
-            //back to menu
-            this.setScreen("menu");
         }
     }
 };
@@ -368,8 +404,6 @@ export default {
 .b:hover {
     background: black;
     color: white;
-    /* border: none; */
-    /* padding: 20px; */
 }
 
 .b:active {

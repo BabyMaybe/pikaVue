@@ -77,7 +77,10 @@ class Pokemon {
     }
 
     heal(num) {
+        const startHealth = this.stats.hp;
         this.stats.hp = Math.min(this.stats.hp + num, this.stats.currentStats.hp);
+        const recovered = this.stats.hp - startHealth;
+        return recovered;
     }
 
     // attack(pokemon) {

@@ -126,7 +126,7 @@ export default {
     flex-wrap: wrap;
     align-items: stretch;
     justify-content: space-around;
-    width: 100%;
-    box-sizing: border-box;
+    /* width: 100%;
+    box-sizing: border-box; */
 }
 </style>

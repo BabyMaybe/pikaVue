@@ -6,27 +6,28 @@
 
 <script>
 export default {
-  name: "MenuItem",
-  props: {
-    text: String
-  }
+    name: "MenuItem",
+    props: {
+        text: String
+    }
 };
 </script>
 
 <style scoped>
 .menu-item {
-  flex: 1 1 50%;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  cursor: pointer;
-  padding: 25px;
+    flex: 1 1 50%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    cursor: pointer;
+    padding: 25px;
+    text-transform: uppercase;
 }
 
 .menu-item:hover {
-  background: black;
-  color: white;
+    background: black;
+    color: white;
 }
 </style>

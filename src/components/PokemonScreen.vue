@@ -53,58 +53,58 @@
 import TextFrame from "./TextFrame";
 
 export default {
-  name: "PokemonScreen",
-  components: {
-    TextFrame
-  },
-  data: function() {
-    return {};
-  },
-  props: {
-    pokemon: Object
-  },
-  methods: {},
-  created: function() {}
+    name: "PokemonScreen",
+    components: {
+        TextFrame
+    },
+    data: function() {
+        return {};
+    },
+    props: {
+        pokemon: Object
+    },
+    methods: {},
+    created: function() {}
 };
 </script>
 
-<style scoped>
+<style>
 .name {
-  font-size: 32px;
-  /* text-transform: uppercase; */
-  border-bottom: solid black 5px;
-  padding: 5px;
-  padding-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
+    font-size: 32px;
+    /* text-transform: uppercase; */
+    border-bottom: solid black 5px;
+    padding: 5px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .stat {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-  font-size: 24px;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 24px;
 }
 
 .stat-table {
-  font-size: 24px;
-  width: 100%;
-  border-spacing: 0px;
-  border-collapse: collapse;
+    font-size: 24px;
+    width: 100%;
+    border-spacing: 0px;
+    border-collapse: collapse;
 }
 
 th {
-  /* font-size: 32px; */
-  font-weight: normal;
-  border-bottom: solid black 3px;
-  padding: 8px 0;
+    /* font-size: 32px; */
+    font-weight: normal;
+    border-bottom: solid black 3px;
+    padding: 8px 0;
 }
 
 td {
-  /* text-align: center; */
-  padding: 8px 0;
-  border-top: solid black 2px;
-  /* border: solid black 3px; */
-  padding-left: 20px;
+    /* text-align: center; */
+    padding: 8px 0;
+    border-top: solid black 2px;
+    /* border: solid black 3px; */
+    padding-left: 20px;
 }
 </style>
