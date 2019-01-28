@@ -1,16 +1,39 @@
+import { baseExperience } from "./BaseExperience";
+
 class Pokemon {
     constructor(params) {
         this.name = params.name;
         this.type = params.type;
-        this.xp = 0;
+        this.xp = {
+            xp: 0,
+            growthRate: "", //fast, medium fast, medium slow, slow
+            nextLvl: 0,
+            growthFormulas: {
+                fast: function(lvl) {
+                    return Math.floor((4 * Math.pow(lvl, 3)) / 5);
+                },
+                mediumFast: function(lvl) {
+                    return Math.pow(lvl, 3);
+                },
+                mediumSlow: function(lvl) {
+                    return Math.max(
+                        Math.floor((6 / 5) * Math.pow(lvl, 3) - 15 * Math.pow(lvl, 2) + 100 * lvl - 140),
+                        0
+                    );
+                },
+                slow: function(lvl) {
+                    return Math.floor((5 * Math.pow(lvl, 3)) / 4);
+                }
+            }
+        };
         this.lvl = params.lvl;
         this.stats = {
             baseStats: {
-                hp: params.baseStats.hp,
                 attack: params.baseStats.attack,
                 defense: params.baseStats.defense,
                 special: params.baseStats.special,
-                speed: params.baseStats.speed
+                speed: params.baseStats.speed,
+                hp: params.baseStats.hp
             },
             IVs: {
                 attack: getRandom(0, 15),
@@ -83,14 +106,9 @@ class Pokemon {
         return recovered;
     }
 
-    // attack(pokemon) {
-    //     // const defense = pokemon.stats.defense;
-    //     // const attack = this.stats.attack;
-    //     // const damage = Math.max(attack - defense, 0);
-    //     // console.log("attacks for ", damage);
-    //     // pokemon.updateHealth(damage);
-    //     return pokemon;
-    // }
+    initXP() {
+        this.xp.xp = 1;
+    }
 
     updateStats() {
         this.stats.currentStats.attack = this.complicatedMath("attack");
@@ -110,6 +128,42 @@ class Pokemon {
                     100
             ) + 5
         );
+    }
+
+    //handle defeating another pokemon
+    digest(pkmn) {
+        // Add defeated pokemon's base stats to EVs
+        for (let stat in pkmn.stats.baseStats) {
+            this.stats.EVs[stat] += pkmn.stats.baseStats[stat];
+        }
+        // Add experience
+    }
+
+    gainXp(pkmn) {
+        const a = 1; //wild: 1, trainer: 1.5
+        const t = 1; //caught: 1, trade: 1.5
+        const b = baseExperience[pkmn.name.toLowerCase()]; //lookup table base xp
+        const e = 1; //luck egg: 1.5, no egg: 1
+        const L = pkmn.lvl; //defeated level
+        const p = 1; //xp point power
+        const f = 1; //affection 2+ <3: 1.2, no: 1
+        const v = 1; //unevolved: 1.2, else: 1
+        const s = 1; //num pokemon participated in battle who did not faint
+
+        const xpGained = Math.floor((a * t * b * e * L * p * f * v) / (7 * s));
+
+        this.xp.xp += xpGained;
+        return xpGained;
+    }
+
+    needsLevel() {
+        return this.xp >= this.nextLvl;
+    }
+
+    levelUp() {
+        this.lvl = Math.min(this.lvl + 1, 100);
+        this.xp.nextLvl = this.xp.growthFormulas[this.xp.growthRate](this.lvl);
+        this.updateStats();
     }
 
     toString() {

@@ -103,7 +103,7 @@ export default {
                     special: 50,
                     speed: 65
                 },
-                lvl: 100,
+                lvl: 10,
                 moveSet: [
                     new Move({
                         move: {
@@ -162,6 +162,7 @@ export default {
                 message: "",
                 runAttempts: 0,
                 battleOver: false,
+                playerWon: false,
                 item: null
             },
             menuItems: [
@@ -216,6 +217,9 @@ export default {
         },
 
         setScreen(screen) {
+            if (screen === "menu") {
+                // debugger;
+            }
             for (var menuItem in this.menuState) {
                 this.menuState[menuItem] = false;
             }
@@ -245,7 +249,9 @@ export default {
             //--- pokemon 2 --- //
             await this.battleTurn(secondPokemon, firstPokemon, secondMove);
 
-            this.setScreen("menu");
+            if (!this.turn.battleOver) {
+                this.setScreen("menu");
+            }
         },
 
         async battleTurn(attacker, defender, move) {
@@ -257,12 +263,23 @@ export default {
             this.setScreen("msg");
             await this.waitForClick();
 
+            //accuracy check
+            const challenge = getRandom(0, 100);
+            if (challenge > move.accuracy) {
+                this.turn.message = `${attacker.name.toUpperCase()}'s attack missed!`;
+                await this.waitForClick();
+                return;
+            }
             //calculate damage
-            let damage = this.calcAttack(attacker, defender, move);
+            let { damage, crit } = this.calcAttack(attacker, defender, move);
 
             //apply damage
             defender.damage(damage);
 
+            if (crit > 1) {
+                this.turn.message = "Critical hit!";
+                await this.waitForClick();
+            }
             //display secondary text (status, crit, effictive)
             this.turn.message = `${move.name.toUpperCase()} did ${damage} damage!`;
             await this.waitForClick();
@@ -270,7 +287,11 @@ export default {
             //check for faint
 
             if (defender.checkFaint()) {
-                this.turn.message = `${defender.name} fainted!`;
+                if (attacker === this.player) {
+                    console.log("player wins!");
+                    this.turn.playerWon = true;
+                }
+                this.turn.message = `${defender.name.toUpperCase()} fainted!`;
                 defender.faintTransition = true;
                 await this.waitForClick();
                 defender.applyStatus("fainted");
@@ -302,18 +323,17 @@ export default {
                     }
                 }
             }
-            const msg = success ? "Got away safely!" : "Can't escape!";
-            this.setScreen("msg");
-            this.turn.message = msg;
 
-            await this.waitForClick();
             if (success) {
-                this.endBattle();
+                this.endBattle("Got away safely!");
+            } else {
+                this.setScreen("msg");
+                this.turn.message = "Can't escape!";
+                await this.waitForClick();
             }
         },
 
         async itemTurn() {
-            console.log("using item");
             this.setScreen("msg");
             this.turn.message = `Used ${this.turn.item.name.toUpperCase()} on ${this.player.name.toUpperCase()}`;
             await this.waitForClick();
@@ -327,18 +347,44 @@ export default {
             await this.waitForClick();
         },
 
-        endBattle() {
-            console.log("battle over");
+        async endBattle() {
             this.turn.battleOver = true;
-            //victory/defeat text [ ]
-            //pokemon out [x]
-            //reset turn values?
+
             //gain evs
-            //gain experience
-            //check level up
+            if (this.turn.playerWon) {
+                this.player.digest(this.wild);
+
+                //gain experience
+                const xp = this.player.gainXp(this.wild);
+
+                this.setScreen("msg");
+                this.turn.message = `${this.player.name.toUpperCase()} gained ${xp} EXP. Points!`;
+                await this.waitForClick();
+
+                //check level up
+                if (this.player.needsLevel()) {
+                    this.turn.msg = `${this.player.name.toUpperCase()} grew to level ${this.player.lvl}!`;
+                    await this.waitForClick();
+                }
+            }
             //back to menu [ ] - need new menu
-            //generate new pokemon
+
+            //reset turn values?
+            //this might be unneccesary if BattleGround is destroyed and recreated every time
+            console.log("resetting turn");
+            this.turn = {
+                playerAction: function() {},
+                playerMove: null,
+                wildMove: null,
+                message: "",
+                runAttempts: 0,
+                battleOver: false,
+                item: null
+            };
+
             this.setScreen("menu");
+
+            //generate new pokemon
         },
 
         calcAttack(attacker, defender, move) {
@@ -347,15 +393,19 @@ export default {
             const attack = attacker.stats.currentStats.attack;
             const defense = defender.stats.currentStats.defense;
 
+            const critChallenge = getRandom(0, 255);
+            const T = attacker.stats.baseStats.speed / 2;
+            const crit = critChallenge < T ? (2 * level + 5) / (level + 5) : 1;
+
             const rand = (Math.floor(Math.random() * (255 - 217 + 1)) + 217) / 255;
             const STAB = move.type === attacker.type ? 1.5 : 1;
             const typeBonus = this.calcTypeBonus(move.type, defender.type);
 
-            const modifier = rand * STAB * typeBonus;
+            const modifier = rand * STAB * typeBonus * crit;
 
             const damage = Math.round((2 * level / 5 * power * (attack / defense) / 50 + 2) * modifier);
             // defender.damage(damage);
-            return damage;
+            return { damage: damage, crit: crit };
         },
 
         calcTypeBonus(moveType, pkmnType) {
