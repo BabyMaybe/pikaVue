@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <BattleGround></BattleGround>
+    <PokeWorld></PokeWorld>
   </div>
 </template>
 
 <script>
-import BattleGround from "./components/BattleGround";
+import PokeWorld from "./components/PokeWorld";
 
 export default {
     name: "app",
     components: {
-        BattleGround
+        PokeWorld
     }
 };
 </script>
@@ -18,12 +18,15 @@ export default {
 <style>
 @import url("https://fonts.googleapis.com/css?family=Press+Start+2P");
 
+body {
+    margin: 0;
+    padding: 0;
+}
+
 #app {
     font-family: "Press Start 2P", monospace;
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
-    /* color: #2c3e50; */
-    margin-top: 60px;
 }
 </style>

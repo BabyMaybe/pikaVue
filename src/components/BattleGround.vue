@@ -45,108 +45,13 @@ export default {
         PokemonScreen,
         PokemonRow
     },
+    props: {
+        player: Pokemon,
+        wild: Pokemon
+    },
 
     data: function() {
         return {
-            player: new Pokemon({
-                name: "Pikachu",
-                type: "Electric",
-                baseStats: {
-                    hp: 35,
-                    attack: 55,
-                    defense: 40,
-                    special: 50,
-                    speed: 90
-                },
-                lvl: 100,
-                moveSet: [
-                    new Move({
-                        move: {
-                            name: "tackle",
-                            power: 40,
-                            type: { name: "normal" },
-                            damage_class: { name: "physical" },
-                            pp: 35,
-                            accuracy: 100
-                        }
-                    }),
-                    new Move({
-                        move: {
-                            name: "thunder shock",
-                            power: 40,
-                            type: { name: "electric" },
-                            damage_class: { name: "special" },
-                            pp: 30,
-                            accuracy: 100
-                        }
-                    }),
-                    new Move({
-                        move: {
-                            name: "water gun",
-                            power: 40,
-                            type: { name: "water" },
-                            damage_class: { name: "special" },
-                            pp: 25,
-                            accuracy: 100
-                        }
-                    }),
-                    new Move()
-                ]
-            }),
-            wild: new Pokemon({
-                name: "Charmander",
-                type: "Fire",
-                baseStats: {
-                    hp: 39,
-                    attack: 52,
-                    defense: 43,
-                    special: 50,
-                    speed: 65
-                },
-                lvl: 10,
-                moveSet: [
-                    new Move({
-                        move: {
-                            name: "scratch",
-                            power: 40,
-                            type: { name: "normal" },
-                            damage_class: { name: "physical" },
-                            pp: 35,
-                            accuracy: 100
-                        }
-                    }),
-                    new Move({
-                        move: {
-                            name: "bite",
-                            power: 60,
-                            type: { name: "electric" },
-                            damage_class: { name: "physical" },
-                            pp: 25,
-                            accuracy: 100
-                        }
-                    }),
-                    new Move({
-                        move: {
-                            name: "ember",
-                            power: 40,
-                            type: { name: "fire" },
-                            damage_class: { name: "special" },
-                            pp: 25,
-                            accuracy: 100
-                        }
-                    }),
-                    new Move({
-                        move: {
-                            name: "rock-slide",
-                            power: 75,
-                            type: { name: "rock" },
-                            damage_class: { name: "physical" },
-                            pp: 25,
-                            accuracy: 90
-                        }
-                    })
-                ]
-            }),
             menuState: {
                 menu: true,
                 fight: false,
@@ -217,9 +122,6 @@ export default {
         },
 
         setScreen(screen) {
-            if (screen === "menu") {
-                // debugger;
-            }
             for (var menuItem in this.menuState) {
                 this.menuState[menuItem] = false;
             }

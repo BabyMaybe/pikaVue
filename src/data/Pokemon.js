@@ -1,21 +1,22 @@
-import { baseExperience } from "./BaseExperience";
+import { genOneStats } from "./genOneStats";
 
 class Pokemon {
-    constructor(params) {
-        this.name = params.name;
-        this.type = params.type;
+    constructor(pokemon, species, lvl) {
+        // const index = pokemon.id;
+        this.name = pokemon.name;
+        this.type = pokemon.types.map(type => type.name);
         this.xp = {
             xp: 0,
-            growthRate: "", //fast, medium fast, medium slow, slow
+            growthRate: species.growth_rate.name, //fast, medium fast, medium slow, slow
             nextLvl: 0,
             growthFormulas: {
                 fast: function(lvl) {
                     return Math.floor((4 * Math.pow(lvl, 3)) / 5);
                 },
-                mediumFast: function(lvl) {
+                "medium-fast": function(lvl) {
                     return Math.pow(lvl, 3);
                 },
-                mediumSlow: function(lvl) {
+                "medium-slow": function(lvl) {
                     return Math.max(
                         Math.floor((6 / 5) * Math.pow(lvl, 3) - 15 * Math.pow(lvl, 2) + 100 * lvl - 140),
                         0
@@ -26,14 +27,14 @@ class Pokemon {
                 }
             }
         };
-        this.lvl = params.lvl;
+        this.lvl = lvl;
         this.stats = {
             baseStats: {
-                attack: params.baseStats.attack,
-                defense: params.baseStats.defense,
-                special: params.baseStats.special,
-                speed: params.baseStats.speed,
-                hp: params.baseStats.hp
+                attack: pokemon.stats[4].baseStat,
+                defense: pokemon.stats[3].baseStat,
+                special: genOneStats[pokemon.name].special,
+                speed: pokemon.stats[0].baseStat,
+                hp: pokemon.stats[5].baseStat
             },
             IVs: {
                 attack: getRandom(0, 15),
@@ -73,7 +74,7 @@ class Pokemon {
         this.calculateHealthIV(this.stats.IVs);
         this.updateStats();
 
-        this.moveSet = params.moveSet;
+        // this.moveSet = params.moveSet;
 
         this.faintTransition = false;
     }
@@ -142,7 +143,7 @@ class Pokemon {
     gainXp(pkmn) {
         const a = 1; //wild: 1, trainer: 1.5
         const t = 1; //caught: 1, trade: 1.5
-        const b = baseExperience[pkmn.name.toLowerCase()]; //lookup table base xp
+        const b = genOneStats[pkmn.name.toLowerCase()].baseExperience; //lookup table base xp
         const e = 1; //luck egg: 1.5, no egg: 1
         const L = pkmn.lvl; //defeated level
         const p = 1; //xp point power
