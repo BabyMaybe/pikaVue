@@ -46,8 +46,8 @@ export default {
         PokemonRow
     },
     props: {
-        player: Pokemon,
-        wild: Pokemon
+        player: Object,
+        wild: Object
     },
 
     data: function() {

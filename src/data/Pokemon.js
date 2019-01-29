@@ -2,18 +2,22 @@ import { genOneStats } from "./genOneStats";
 
 class Pokemon {
     constructor(pokemon, species, lvl) {
-        // const index = pokemon.id;
-        this.name = pokemon.name;
-        this.type = pokemon.types.map(type => type.name);
+        this.sprites = {
+            front: pokemon.sprites.front_default,
+            back: pokemon.sprites.back_default
+        };
+        this.index = pokemon.id;
+        this.name = pokemon.name.toUpperCase();
+        this.type = pokemon.types.map(type => type.type.name);
         this.xp = {
-            xp: 0,
+            xp: 1,
             growthRate: species.growth_rate.name, //fast, medium fast, medium slow, slow
             nextLvl: 0,
             growthFormulas: {
                 fast: function(lvl) {
                     return Math.floor((4 * Math.pow(lvl, 3)) / 5);
                 },
-                "medium-fast": function(lvl) {
+                medium: function(lvl) {
                     return Math.pow(lvl, 3);
                 },
                 "medium-slow": function(lvl) {
@@ -30,11 +34,11 @@ class Pokemon {
         this.lvl = lvl;
         this.stats = {
             baseStats: {
-                attack: pokemon.stats[4].baseStat,
-                defense: pokemon.stats[3].baseStat,
+                attack: pokemon.stats[4].base_stat,
+                defense: pokemon.stats[3].base_stat,
                 special: genOneStats[pokemon.name].special,
-                speed: pokemon.stats[0].baseStat,
-                hp: pokemon.stats[5].baseStat
+                speed: pokemon.stats[0].base_stat,
+                hp: pokemon.stats[5].base_stat
             },
             IVs: {
                 attack: getRandom(0, 15),
@@ -74,9 +78,56 @@ class Pokemon {
         this.calculateHealthIV(this.stats.IVs);
         this.updateStats();
 
-        // this.moveSet = params.moveSet;
+        this.xp.xp = this.xp.growthFormulas[this.xp.growthRate](lvl);
+
+        this.allMoves = pokemon.moves
+            .reduce((acc, move) => {
+                const redBlueDetails = move.version_group_details.find(vgd => vgd.version_group.name === "red-blue");
+                if (redBlueDetails) {
+                    const m = {
+                        name: move.move.name.toUpperCase(),
+                        url: move.move.url,
+                        lvlLearned: redBlueDetails.level_learned_at
+                    };
+                    acc.push(m);
+                }
+                return acc;
+            }, [])
+            .sort((a, b) => a.lvlLearned - b.lvlLearned);
+
+        this.moveSet = [];
+        this.addRandomMoves();
 
         this.faintTransition = false;
+    }
+
+    availableMoves() {
+        return this.allMoves.filter(m => m.lvlLearned <= this.lvl);
+    }
+
+    async addMove(move) {
+        const request = move.url;
+        let moveData;
+        await fetch(request)
+            .then(response => response.json())
+            .then(data => (moveData = data));
+
+        const newMove = new Move(moveData);
+        if (this.moveSet.length < 4) {
+            this.moveSet.push(newMove);
+        } else {
+            console.log("need to delete moves first");
+        }
+    }
+
+    addRandomMoves() {
+        let moves = this.availableMoves();
+        for (let i = 0; i < 4; i++) {
+            const index = getRandom(0, moves.length);
+            const m = moves[index];
+            this.addMove(m);
+            moves.splice(index, 1);
+        }
     }
 
     calculateHealthIV(IVs) {
@@ -107,10 +158,6 @@ class Pokemon {
         return recovered;
     }
 
-    initXP() {
-        this.xp.xp = 1;
-    }
-
     updateStats() {
         this.stats.currentStats.attack = this.complicatedMath("attack");
         this.stats.currentStats.defense = this.complicatedMath("defense");
@@ -118,6 +165,7 @@ class Pokemon {
         this.stats.currentStats.special = this.complicatedMath("special");
         this.stats.currentStats.hp = this.complicatedMath("hp") + this.lvl + 5;
         this.stats.hp = this.stats.currentStats.hp;
+        this.xp.nextLvl = this.xp.growthFormulas[this.xp.growthRate](this.lvl + 1);
     }
 
     complicatedMath(stat) {
@@ -179,22 +227,13 @@ function getRandom(min, max) {
 }
 
 class Move {
-    constructor(params) {
-        if (params) {
-            this.name = params.move.name ? params.move.name : "----";
-            this.power = params.move.power ? params.move.power : 0;
-            this.type = params.move.type.name ? params.move.type.name : "----";
-            this.damageClass = params.move.damage_class.name ? params.move.damage_class.name : "----";
-            this.pp = params.move.pp ? params.move.pp : 0;
-            this.accuracy = params.move.accuracy ? params.move.accuracy : 0;
-        } else {
-            this.name = "----";
-            this.power = 0;
-            this.type = "----";
-            this.damageClass = "----";
-            this.pp = 0;
-            this.accuracy = 0;
-        }
+    constructor(moveData) {
+        this.name = moveData.names.find(n => n.language.name === "en").name;
+        this.power = moveData.power;
+        this.type = moveData.type.name;
+        this.damageClass = moveData.damage_class.name;
+        this.pp = moveData.pp;
+        this.accuracy = moveData.accuracy;
     }
 
     toString() {

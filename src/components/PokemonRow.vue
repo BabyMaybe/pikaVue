@@ -4,7 +4,7 @@
 <transition name="poke-slide">
     <div class="poke-row" :class="{player: player, wild: !player, grey: pokemon.faintTransition}" v-if="!fainted">
         <Stats :pokemon="pokemon" :hp="pokemon.stats.hp" />
-        <PokeSprite :url="img" v-if="!fainted" />
+        <PokeSprite :url="pokemon.sprites.front" v-if="!fainted" />
     </div>
 </transition>
 
