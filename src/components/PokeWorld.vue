@@ -1,30 +1,32 @@
 <template>
     <div class="pokeworld">
+        <Selection v-if="worlds.selection"></Selection>
         <BattleGround v-if="worlds.battle && wild" :player="pokemon" :wild="wild" @battleOver="setWorld"></BattleGround>
-        <!-- <BattleGround v-if="worlds.battle" ></BattleGround> -->
         <Overworld v-if="worlds.overworld" :pokemon="pokemon" @battleReady="newBattle"></Overworld>
+
     </div>
 </template>
 <script>
 import BattleGround from "./BattleGround";
 import Overworld from "./Overworld";
-// import { Pokemon, Move, getRandom } from "../data/Pokemon.js";
+import Selection from "./Selection";
 import { Pokemon, getRandom } from "../data/Pokemon.js";
 
 export default {
     name: "PokeWorld",
     components: {
         BattleGround,
-        Overworld
+        Overworld,
+        Selection
     },
     data: function() {
         return {
             worlds: {
-                battle: true,
+                battle: false,
                 overworld: false,
                 pokemart: false,
                 pokecenter: false,
-                selection: false
+                selection: true
             },
             pokemon: null,
             wild: null,
