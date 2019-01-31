@@ -17,14 +17,17 @@ export default {
 .poke-sprite {
     width: 300px;
     height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .poke-sprite-img {
-    min-width: 200%;
-    height: 200%;
+    min-width: 150%;
+    height: 150%;
     image-rendering: pixelated;
-    position: relative;
+    /* position: relative;
     right: 50%;
-    bottom: 50%;
+    bottom: 50%; */
     pointer-events: none;
 }
 </style>

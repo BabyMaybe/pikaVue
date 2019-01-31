@@ -81,7 +81,7 @@ export const genOneStats = {
     slowbro: { baseExperience: 164, special: 80 },
     magnemite: { baseExperience: 89, special: 95 },
     magneton: { baseExperience: 161, special: 120 },
-    "farfetch'd": { baseExperience: 94, special: 58 },
+    farfetchd: { baseExperience: 94, special: 58 },
     doduo: { baseExperience: 96, special: 35 },
     dodrio: { baseExperience: 158, special: 60 },
     seel: { baseExperience: 100, special: 70 },

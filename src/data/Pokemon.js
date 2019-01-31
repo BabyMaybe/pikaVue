@@ -123,10 +123,12 @@ class Pokemon {
     addRandomMoves() {
         let moves = this.availableMoves();
         for (let i = 0; i < 4; i++) {
-            const index = getRandom(0, moves.length);
+            const index = getRandom(0, moves.length - 1);
             const m = moves[index];
-            this.addMove(m);
-            moves.splice(index, 1);
+            if (m) {
+                this.addMove(m);
+                moves.splice(index, 1);
+            }
         }
     }
 

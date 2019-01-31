@@ -1,13 +1,12 @@
 <template>
   <div class="battleground">
 
-    <PokemonRow :pokemon="wild" :player="false" img='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png' />
-    <PokemonRow :pokemon="player" :player="true" img='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/25.png' />
+    <PokemonRow :pokemon="wild" :player="false" />
+    <PokemonRow :pokemon="player" :player="true" />
 
     <div class="menu-space">
       <MenuScreen @menuSelected="handleMenuSelected" v-show="menuState.menu" :menuItems="menuItems" />
-      <MoveScreen v-show="menuState.fight" @attack="handleAttack"/>
-      <!-- <MessageScreen v-show="menuState.run"/> -->
+      <MoveScreen v-show="menuState.fight" @attack="handleAttack"  :moves="player.moveSet"/>
       <InventoryScreen v-show="menuState.item" @itemUsed="handleItem"/>
       <PokemonScreen v-show="menuState.pkmn" :pokemon="player"/>
       <MessageScreen v-show="menuState.msg" :messageText="turn.message" @nextClicked="handleNext" />
@@ -21,8 +20,6 @@
 </template>
 
 <script>
-// import Stats from "./Stats";
-// import PokeSprite from "./PokeSprite";
 import MenuScreen from "./MenuScreen";
 import MoveScreen from "./MoveScreen";
 import MessageScreen from "./MessageScreen";
@@ -30,14 +27,12 @@ import InventoryScreen from "./InventoryScreen";
 import PokemonScreen from "./PokemonScreen";
 import PokemonRow from "./PokemonRow";
 
-import { Pokemon, Move, getRandom } from "../data/Pokemon.js";
+import { getRandom } from "../data/Pokemon.js";
 import { itemDB } from "../data/Items.js";
 
 export default {
     name: "BattleGround",
     components: {
-        // Stats,
-        // PokeSprite,
         MenuScreen,
         MoveScreen,
         MessageScreen,
@@ -53,18 +48,17 @@ export default {
     data: function() {
         return {
             menuState: {
-                menu: true,
+                menu: false,
                 fight: false,
                 item: false,
-                run: false,
                 pkmn: false,
-                msg: false
+                msg: true
             },
             turn: {
                 playerAction: function() {},
                 playerMove: null,
                 wildMove: null,
-                message: "",
+                message: " ",
                 runAttempts: 0,
                 battleOver: false,
                 playerWon: false,
@@ -115,7 +109,7 @@ export default {
 
         handleItem(item) {
             const selected = itemDB[item];
-            console.log(selected);
+
             this.turn.item = selected;
             this.turn.playerAction = this.itemTurn;
             this.processTurn();
@@ -130,7 +124,7 @@ export default {
 
         async processTurn() {
             //generate wild move
-            this.turn.wildMove = this.wild.moveSet[getRandom(0, 3)];
+            this.turn.wildMove = this.wild.moveSet[getRandom(0, this.wild.moveSet.length - 1)];
 
             //determine move order
             const moveOrder = [
@@ -173,13 +167,28 @@ export default {
                 return;
             }
             //calculate damage
-            let { damage, crit } = this.calcAttack(attacker, defender, move);
+            let { damage, crit, typeBonus } = await this.calcAttack(attacker, defender, move);
 
             //apply damage
             defender.damage(damage);
 
             if (crit > 1) {
                 this.turn.message = "Critical hit!";
+                await this.waitForClick();
+            }
+
+            if (typeBonus > 1) {
+                this.turn.message = "It's super effective!";
+                await this.waitForClick();
+            }
+
+            if (typeBonus < 1 && typeBonus > 0) {
+                this.turn.message = "It's not very effective...";
+                await this.waitForClick();
+            }
+
+            if (typeBonus === 0) {
+                this.turn.message = "No effect!";
                 await this.waitForClick();
             }
             //display secondary text (status, crit, effictive)
@@ -190,7 +199,6 @@ export default {
 
             if (defender.checkFaint()) {
                 if (attacker === this.player) {
-                    console.log("player wins!");
                     this.turn.playerWon = true;
                 }
                 this.turn.message = `${defender.name.toUpperCase()} fainted!`;
@@ -208,26 +216,25 @@ export default {
             const c = this.turn.runAttempts;
             let success = false;
             if (b === 0) {
-                console.log("0 mod success");
-
                 success = true;
             } else {
                 const f = (a * 32 / b + 30) * c;
 
                 if (f > 255) {
-                    console.log("high f success");
                     success = true;
                 } else {
                     const challenge = getRandom(0, 255);
                     if (f > challenge) {
-                        console.log("challenge success");
                         success = true;
                     }
                 }
             }
 
             if (success) {
-                this.endBattle("Got away safely!");
+                this.setScreen("msg");
+                this.turn.message = "Got away safely!";
+                await this.waitForClick();
+                this.endBattle();
             } else {
                 this.setScreen("msg");
                 this.turn.message = "Can't escape!";
@@ -269,11 +276,13 @@ export default {
                     await this.waitForClick();
                 }
             }
+
+            // generate drops
+            this.generateDrops();
             //back to menu [ ] - need new menu
 
             //reset turn values?
             //this might be unneccesary if BattleGround is destroyed and recreated every time
-            console.log("resetting turn");
             this.turn = {
                 playerAction: function() {},
                 playerMove: null,
@@ -284,12 +293,16 @@ export default {
                 item: null
             };
 
-            this.setScreen("menu");
+            this.$emit("battleOver", "overworld");
 
             //generate new pokemon
         },
 
-        calcAttack(attacker, defender, move) {
+        generateDrops() {
+            return { potion: 1 };
+        },
+
+        async calcAttack(attacker, defender, move) {
             const level = attacker.lvl;
             const power = move.power;
             const attack = attacker.stats.currentStats.attack;
@@ -301,22 +314,42 @@ export default {
 
             const rand = (Math.floor(Math.random() * (255 - 217 + 1)) + 217) / 255;
             const STAB = move.type === attacker.type ? 1.5 : 1;
-            const typeBonus = this.calcTypeBonus(move.type, defender.type);
+            const typeBonus = await this.calcTypeBonus(move.type, defender.type);
 
             const modifier = rand * STAB * typeBonus * crit;
 
             const damage = Math.round((2 * level / 5 * power * (attack / defense) / 50 + 2) * modifier);
-            // defender.damage(damage);
-            return { damage: damage, crit: crit };
+
+            console.log(level, power, attack, defense, critChallenge, T, crit, rand, STAB, typeBonus, modifier, damage);
+            return { damage: damage, crit: typeBonus > 0 ? crit : 0, typeBonus, typeBonus };
         },
 
-        calcTypeBonus(moveType, pkmnType) {
-            // return either .5, 1, 2, 4 based on type lookup
-            if (moveType === "water") {
-                return 2;
+        async calcTypeBonus(moveType, pkmnType) {
+            const request = `https://pokeapi.co/api/v2/type/${moveType}/`;
+
+            const response = await fetch(request);
+            const typeData = await response.json();
+            const damageChart = typeData.damage_relations;
+
+            let modifier = 1;
+            for (let type in pkmnType) {
+                if (damageChart.double_damage_to.find(t => pkmnType[type] === t.name)) {
+                    modifier = modifier * 2;
+                } else if (damageChart.half_damage_to.find(t => pkmnType[type] === t.name)) {
+                    modifier = modifier * 0.5;
+                } else if (damageChart.no_damage_to.find(t => pkmnType[type] === t.name)) {
+                    modifier = 0;
+                    return modifier;
+                }
             }
-            return 1;
+            return modifier;
         }
+    },
+    created: async function() {
+        this.turn.message = `Wild ${this.wild.name} appeared!`;
+        await this.waitForClick();
+
+        this.setScreen("menu");
     }
 };
 </script>
