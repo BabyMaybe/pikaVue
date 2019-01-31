@@ -24,6 +24,7 @@ export default {
     text-align: left;
     position: relative;
     width: 1000px;
+    background: white;
 }
 
 .ball {

@@ -24,6 +24,7 @@ export default {
     },
     methods: {
         selectMenu: function(item) {
+            console.log("selecting item", item.text);
             this.$emit("menuSelected", item);
         }
     }
