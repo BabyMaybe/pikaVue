@@ -1,6 +1,6 @@
 <template>
     <div class="pokeworld">
-        <Selection v-if="worlds.selection"></Selection>
+        <Selection v-if="worlds.selection" @requestPokemon="generatePlayer" @battleReady="setWorld" :pokemon="pokemon"></Selection>
         <BattleGround v-if="worlds.battle && wild" :player="pokemon" :wild="wild" @battleOver="setWorld"></BattleGround>
         <Overworld v-if="worlds.overworld" :pokemon="pokemon" @battleReady="newBattle"></Overworld>
 
@@ -41,26 +41,11 @@ export default {
             this.worlds[world] = true;
         },
 
-        async generatePokemon() {
-            const lvl = 100;
-            const id = getRandom(1, 151);
-
-            const pokemonRequest = `https://pokeapi.co/api/v2/pokemon/${id}/`;
-
-            const pokemonResponse = await fetch(pokemonRequest);
-            const pokemon = await pokemonResponse.json();
-
-            const speciesRequest = pokemon.species.url;
-            const speciesResponse = await fetch(speciesRequest);
-            const species = await speciesResponse.json();
-
-            this.pokemon = new Pokemon(pokemon, species, lvl);
-        },
-        async generateWild() {
-            const lvl = 100;
-            const id = getRandom(1, 151);
-
-            const pokemonRequest = `https://pokeapi.co/api/v2/pokemon/${id}/`;
+        async generatePokemon(id, level) {
+            const lvl = level || 1;
+            const i = id || getRandom(1, 151);
+            console.log("id, i", id, i);
+            const pokemonRequest = `https://pokeapi.co/api/v2/pokemon/${i}/`;
 
             const pokemonResponse = await fetch(pokemonRequest);
             const pokemon = await pokemonResponse.json();
@@ -69,10 +54,31 @@ export default {
             const speciesResponse = await fetch(speciesRequest);
             const species = await speciesResponse.json();
 
-            this.wild = new Pokemon(pokemon, species, lvl);
+            return new Pokemon(pokemon, species, lvl);
         },
+        async generatePlayer(pkmn) {
+            console.log("generating player");
+            console.log(pkmn);
+            this.pokemon = await this.generatePokemon(pkmn);
+        },
+        // async generateWild() {
+        //     const lvl = 100;
+        //     const id = getRandom(1, 151);
+
+        //     const pokemonRequest = `https://pokeapi.co/api/v2/pokemon/${id}/`;
+
+        //     const pokemonResponse = await fetch(pokemonRequest);
+        //     const pokemon = await pokemonResponse.json();
+
+        //     const speciesRequest = pokemon.species.url;
+        //     const speciesResponse = await fetch(speciesRequest);
+        //     const species = await speciesResponse.json();
+
+        //     this.wild = new Pokemon(pokemon, species, lvl);
+        // },
         async newBattle() {
-            await this.generateWild();
+            let wild = await this.generatePokemon();
+            this.wild = wild;
             this.setWorld("battle");
         }
         // waitForMiliseconds: function(ms) {
@@ -101,8 +107,8 @@ export default {
         // }
     },
     created: function() {
-        this.generatePokemon();
-        this.generateWild();
+        // this.pokemon = await generatePokemon();
+        // this.wild = generateWild();
         // this.generateAll();
     }
 };
