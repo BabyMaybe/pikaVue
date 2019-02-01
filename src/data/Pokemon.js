@@ -87,7 +87,8 @@ class Pokemon {
                     const m = {
                         name: move.move.name.toUpperCase(),
                         url: move.move.url,
-                        lvlLearned: redBlueDetails.level_learned_at
+                        lvlLearned: redBlueDetails.level_learned_at,
+                        learnMethod: redBlueDetails.move_learn_method.name
                     };
                     acc.push(m);
                 }
@@ -103,6 +104,14 @@ class Pokemon {
 
     availableMoves() {
         return this.allMoves.filter(m => m.lvlLearned <= this.lvl);
+    }
+
+    allNaturalMoves() {
+        return this.allMoves.filter(move => move.learnMethod === "level-up");
+    }
+
+    availableNaturalMoves() {
+        return this.availableMoves().filter(move => move.learnMethod === "level-up");
     }
 
     async addMove(move) {
@@ -121,8 +130,10 @@ class Pokemon {
     }
 
     addRandomMoves() {
-        let moves = this.availableMoves();
-        for (let i = 0; i < 4; i++) {
+        let moves = this.availableNaturalMoves();
+        let len = moves.length;
+        console.log(moves);
+        for (let i = 0; i < Math.min(4, len); i++) {
             const index = getRandom(0, moves.length - 1);
             const m = moves[index];
             if (m) {
@@ -208,7 +219,8 @@ class Pokemon {
     }
 
     needsLevel() {
-        return this.xp >= this.nextLvl;
+        console.log("needs level up!");
+        return this.xp.xp >= this.xp.nextLvl;
     }
 
     levelUp() {

@@ -161,7 +161,7 @@ export default {
 
             //accuracy check
             const challenge = getRandom(0, 100);
-            if (challenge > move.accuracy) {
+            if (challenge > move.accuracy || move.damageClass === "status") {
                 this.turn.message = `${attacker.name.toUpperCase()}'s attack missed!`;
                 await this.waitForClick();
                 return;
@@ -272,7 +272,8 @@ export default {
 
                 //check level up
                 if (this.player.needsLevel()) {
-                    this.turn.msg = `${this.player.name.toUpperCase()} grew to level ${this.player.lvl}!`;
+                    this.player.levelUp();
+                    this.turn.message = `${this.player.name.toUpperCase()} grew to level ${this.player.lvl}!`;
                     await this.waitForClick();
                 }
             }
@@ -303,6 +304,9 @@ export default {
         },
 
         async calcAttack(attacker, defender, move) {
+            // if (move.damageClass === "status") {
+            //     return { damage: 0, crit: 0, typeBonus: 1 };
+            // }
             const level = attacker.lvl;
             const power = move.power;
             const attack = attacker.stats.currentStats.attack;
@@ -321,7 +325,7 @@ export default {
             const damage = Math.round((2 * level / 5 * power * (attack / defense) / 50 + 2) * modifier);
 
             console.log(level, power, attack, defense, critChallenge, T, crit, rand, STAB, typeBonus, modifier, damage);
-            return { damage: damage, crit: typeBonus > 0 ? crit : 0, typeBonus, typeBonus };
+            return { damage: damage, crit: typeBonus > 0 ? crit : 0, typeBonus: typeBonus };
         },
 
         async calcTypeBonus(moveType, pkmnType) {
