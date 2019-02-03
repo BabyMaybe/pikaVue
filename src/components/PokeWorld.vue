@@ -65,7 +65,7 @@ export default {
             const wildLvlMax = Math.min(this.pokemon.lvl * 1.5, this.pokemon.lvl + 10);
             const wildLvl = randomBetween(wildLvlMin, wildLvlMax);
             // const wild = await this.generatePokemon(0, wildLvl);
-            const wild = await this.generatePokemon(0, 5);
+            const wild = await this.generatePokemon(0, 25);
             this.wild = wild;
             this.setWorld("battle");
         }

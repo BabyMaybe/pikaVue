@@ -249,6 +249,7 @@ class Move {
         this.type = moveData.type.name;
         this.damageClass = moveData.damage_class.name;
         this.pp = moveData.pp;
+        this.ppMax = moveData.pp;
         this.accuracy = moveData.accuracy;
     }
 
