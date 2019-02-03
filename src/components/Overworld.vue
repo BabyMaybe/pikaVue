@@ -4,7 +4,7 @@
     <PokeSprite :class="{bounce:!resting}" :url="pokemon.sprites.front"/>
 
     <MenuScreen @menuSelected="handleMenuSelected" v-show="menuState.menu" :menuItems="menuItems" />
-    <InventoryScreen v-show="menuState.items" @itemUsed="handleItems"/>
+    <InventoryScreen v-show="menuState.items" @itemUsed="handleItems" :pokemon="pokemon" />
     <PokemonScreen v-show="menuState.pkmn" :pokemon="pokemon"/>
     <MessageScreen v-show="menuState.msg" :messageText="messageText" @nextClicked="handleNext" />
 
@@ -101,8 +101,8 @@ export default {
             }
             this.menuState[screen.toLowerCase()] = true;
         },
-        handleItems(i) {
-            console.log("items clicked");
+        handleItems() {
+            console.log("you need to implement this still");
         }
     }
 };

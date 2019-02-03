@@ -3,6 +3,7 @@
     <div class="name">
       <span>{{pokemon.name.toUpperCase()}}</span>
       <span>Lvl {{pokemon.lvl}}</span>
+      <span>XP:{{pokemon.xp.xp}} -> {{pokemon.xp.nextLvl}}</span>
     </div>
     <table class="stat-table">
       <thead>

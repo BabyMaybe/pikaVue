@@ -7,7 +7,7 @@
     <div class="menu-space">
       <MenuScreen @menuSelected="handleMenuSelected" v-show="menuState.menu" :menuItems="menuItems" />
       <MoveScreen v-show="menuState.fight" @attack="handleAttack"  :moves="player.moveSet"/>
-      <InventoryScreen v-show="menuState.item" @itemUsed="handleItem"/>
+      <InventoryScreen v-show="menuState.item" @itemUsed="handleItem" :pokemon="player"/>
       <PokemonScreen v-show="menuState.pkmn" :pokemon="player"/>
       <MessageScreen v-show="menuState.msg" :messageText="turn.message" @nextClicked="handleNext" />
 
@@ -27,7 +27,7 @@ import InventoryScreen from "./InventoryScreen";
 import PokemonScreen from "./PokemonScreen";
 import PokemonRow from "./PokemonRow";
 
-import { getRandom } from "../data/Pokemon.js";
+import { randomBetween, weightedPick } from "../data/utilities";
 import { itemDB } from "../data/Items.js";
 
 export default {
@@ -108,9 +108,7 @@ export default {
         },
 
         handleItem(item) {
-            const selected = itemDB[item];
-
-            this.turn.item = selected;
+            this.turn.item = item;
             this.turn.playerAction = this.itemTurn;
             this.processTurn();
         },
@@ -124,7 +122,7 @@ export default {
 
         async processTurn() {
             //generate wild move
-            this.turn.wildMove = this.wild.moveSet[getRandom(0, this.wild.moveSet.length - 1)];
+            this.turn.wildMove = this.wild.moveSet[randomBetween(0, this.wild.moveSet.length - 1)];
 
             //determine move order
             const moveOrder = [
@@ -160,7 +158,7 @@ export default {
             await this.waitForClick();
 
             //accuracy check
-            const challenge = getRandom(0, 100);
+            const challenge = randomBetween(0, 100);
             if (challenge > move.accuracy || move.damageClass === "status") {
                 this.turn.message = `${attacker.name.toUpperCase()}'s attack missed!`;
                 await this.waitForClick();
@@ -223,7 +221,7 @@ export default {
                 if (f > 255) {
                     success = true;
                 } else {
-                    const challenge = getRandom(0, 255);
+                    const challenge = randomBetween(0, 255);
                     if (f > challenge) {
                         success = true;
                     }
@@ -243,16 +241,35 @@ export default {
         },
 
         async itemTurn() {
+            const item = this.turn.item;
             this.setScreen("msg");
-            this.turn.message = `Used ${this.turn.item.name.toUpperCase()} on ${this.player.name.toUpperCase()}`;
+            this.turn.message = `Used ${item.name.toUpperCase()} on ${this.player.name.toUpperCase()}`;
             await this.waitForClick();
-            const recovered = this.player.heal(this.turn.item.amount);
-
-            if (recovered === 0) {
-                this.turn.message = this.turn.item.failText(this.player);
-            } else {
-                this.turn.message = this.turn.item.successText(this.player, recovered);
+            console.log(item);
+            if (item.effect === "heal") {
+                const recovered = this.player.heal(item.amount);
+                if (recovered === 0) {
+                    console.log("didnt recover anything");
+                    this.turn.message = this.turn.item.failText(this.player);
+                } else {
+                    console.log("recovered", recovered);
+                    this.turn.message = this.turn.item.successText(this.player, recovered);
+                }
             }
+
+            if (item.effect === "status") {
+                if (this.player.status[item.status]) {
+                    this.player.status[item.status] = false;
+                    this.turn.message = this.turn.item.successText(this.player);
+                } else {
+                    this.turn.message = this.turn.item.failText(this.player);
+                }
+            }
+
+            if (item.effect === "recover") {
+                this.turn.message = "ill deal with this later";
+            }
+
             await this.waitForClick();
         },
 
@@ -276,10 +293,11 @@ export default {
                     this.turn.message = `${this.player.name.toUpperCase()} grew to level ${this.player.lvl}!`;
                     await this.waitForClick();
                 }
+
+                // generate drops
+                await this.generateDrops();
             }
 
-            // generate drops
-            this.generateDrops();
             //back to menu [ ] - need new menu
 
             //reset turn values?
@@ -299,8 +317,34 @@ export default {
             //generate new pokemon
         },
 
-        generateDrops() {
-            return { potion: 1 };
+        async generateDrops() {
+            // generate loot drops
+            const drop = weightedPick(itemDB);
+            const num = randomBetween(1, 3);
+
+            // add loot to inventory
+            if (this.player.inventory[drop.name]) {
+                this.player.inventory[drop.name].quantity += num;
+            } else {
+                this.player.inventory[drop.name] = {
+                    item: drop,
+                    quantity: num
+                };
+            }
+            this.turn.message = `${this.player.name} found ${num} ${drop.name}${num > 1 ? "s" : ""} after the battle!`;
+            await this.waitForClick();
+
+            // generate gold drops
+            const gold = randomBetween(
+                this.player.lvl,
+                this.wild.lvl * this.player.lvl / 10 + randomBetween(this.wild.lvl, this.player.lvl * 10)
+            );
+
+            // add gold to inventory
+            this.player.wallet += gold;
+            this.turn.message = `${this.player.name} also found p${gold}!`;
+
+            await this.waitForClick();
         },
 
         async calcAttack(attacker, defender, move) {
@@ -312,7 +356,7 @@ export default {
             const attack = attacker.stats.currentStats.attack;
             const defense = defender.stats.currentStats.defense;
 
-            const critChallenge = getRandom(0, 255);
+            const critChallenge = randomBetween(0, 255);
             const T = attacker.stats.baseStats.speed / 2;
             const crit = critChallenge < T ? (2 * level + 5) / (level + 5) : 1;
 
@@ -324,7 +368,7 @@ export default {
 
             const damage = Math.round((2 * level / 5 * power * (attack / defense) / 50 + 2) * modifier);
 
-            console.log(level, power, attack, defense, critChallenge, T, crit, rand, STAB, typeBonus, modifier, damage);
+            // console.log(level, power, attack, defense, critChallenge, T, crit, rand, STAB, typeBonus, modifier, damage);
             return { damage: damage, crit: typeBonus > 0 ? crit : 0, typeBonus: typeBonus };
         },
 
