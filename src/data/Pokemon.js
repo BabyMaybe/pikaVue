@@ -1,3 +1,5 @@
+import { randomBetween } from "./utilities";
+
 import { genOneStats } from "./genOneStats";
 
 class Pokemon {
@@ -31,7 +33,9 @@ class Pokemon {
                 }
             }
         };
+
         this.lvl = lvl;
+
         this.stats = {
             baseStats: {
                 attack: pokemon.stats[4].base_stat,
@@ -41,10 +45,10 @@ class Pokemon {
                 hp: pokemon.stats[5].base_stat
             },
             IVs: {
-                attack: getRandom(0, 15),
-                defense: getRandom(0, 15),
-                special: getRandom(0, 15),
-                speed: getRandom(0, 15),
+                attack: randomBetween(0, 15),
+                defense: randomBetween(0, 15),
+                special: randomBetween(0, 15),
+                speed: randomBetween(0, 15),
                 hp: 0
             },
             EVs: {
@@ -63,6 +67,7 @@ class Pokemon {
             },
             hp: 0
         };
+
         this.status = {
             fainted: false,
             poisoned: false,
@@ -75,6 +80,7 @@ class Pokemon {
             bound: false,
             flinched: false
         };
+
         this.calculateHealthIV(this.stats.IVs);
         this.updateStats();
 
@@ -97,9 +103,13 @@ class Pokemon {
             .sort((a, b) => a.lvlLearned - b.lvlLearned);
 
         this.moveSet = [];
+        // Temp until select, keep for wild
         this.addRandomMoves();
 
         this.faintTransition = false;
+
+        this.inventory = {};
+        this.wallet = 0;
     }
 
     availableMoves() {
@@ -125,16 +135,15 @@ class Pokemon {
         if (this.moveSet.length < 4) {
             this.moveSet.push(newMove);
         } else {
-            console.log("need to delete moves first");
+            // console.log("need to delete moves first");
         }
     }
 
     addRandomMoves() {
         let moves = this.availableNaturalMoves();
         let len = moves.length;
-        console.log(moves);
         for (let i = 0; i < Math.min(4, len); i++) {
-            const index = getRandom(0, moves.length - 1);
+            const index = randomBetween(0, moves.length - 1);
             const m = moves[index];
             if (m) {
                 this.addMove(m);
@@ -219,7 +228,6 @@ class Pokemon {
     }
 
     needsLevel() {
-        console.log("needs level up!");
         return this.xp.xp >= this.xp.nextLvl;
     }
 
@@ -232,12 +240,6 @@ class Pokemon {
     toString() {
         return this.name;
     }
-}
-
-function getRandom(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
 }
 
 class Move {
@@ -255,4 +257,4 @@ class Move {
     }
 }
 
-export { Pokemon, Move, getRandom };
+export { Pokemon, Move };

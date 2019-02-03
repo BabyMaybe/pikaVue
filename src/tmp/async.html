@@ -84,17 +84,16 @@
             }
 
             async function asyncCall() {
-                console.log("calling");
+                // console.log("calling");
                 var result = await resolveAfter2Seconds();
-                console.log(result);
+                // console.log(result);
                 // expected output: 'resolved'
             }
 
             let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
             function waitForClick(e) {
-                console.log(e.target);
+                // console.log(e.target);
                 // return new Promise(resolve => {
-
                 // })
             }
             btn.addEventListener("click", waitForClick);

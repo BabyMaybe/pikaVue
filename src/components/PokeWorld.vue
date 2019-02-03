@@ -10,7 +10,8 @@
 import BattleGround from "./BattleGround";
 import Overworld from "./Overworld";
 import Selection from "./Selection";
-import { Pokemon, getRandom } from "../data/Pokemon.js";
+import { Pokemon } from "../data/Pokemon.js";
+import { randomBetween } from "../data/utilities";
 
 export default {
     name: "PokeWorld",
@@ -29,8 +30,8 @@ export default {
                 selection: true
             },
             pokemon: null,
-            wild: null,
-            all: {}
+            wild: null
+            // all: {}
         };
     },
     methods: {
@@ -42,9 +43,9 @@ export default {
         },
 
         async generatePokemon(id, level) {
-            const lvl = level || 1;
-            const i = id || getRandom(1, 151);
-            console.log("id, i", id, i);
+            const lvl = level || 5;
+            const i = id || randomBetween(1, 151);
+            // console.log("id, i", id, i);
             const pokemonRequest = `https://pokeapi.co/api/v2/pokemon/${i}/`;
 
             const pokemonResponse = await fetch(pokemonRequest);
@@ -57,59 +58,17 @@ export default {
             return new Pokemon(pokemon, species, lvl);
         },
         async generatePlayer(pkmn) {
-            console.log("generating player");
-            console.log(pkmn);
-            this.pokemon = await this.generatePokemon(pkmn);
+            this.pokemon = await this.generatePokemon(pkmn, 25);
         },
-        // async generateWild() {
-        //     const lvl = 100;
-        //     const id = getRandom(1, 151);
-
-        //     const pokemonRequest = `https://pokeapi.co/api/v2/pokemon/${id}/`;
-
-        //     const pokemonResponse = await fetch(pokemonRequest);
-        //     const pokemon = await pokemonResponse.json();
-
-        //     const speciesRequest = pokemon.species.url;
-        //     const speciesResponse = await fetch(speciesRequest);
-        //     const species = await speciesResponse.json();
-
-        //     this.wild = new Pokemon(pokemon, species, lvl);
-        // },
         async newBattle() {
-            let wild = await this.generatePokemon();
+            const wildLvlMin = Math.max(5, Math.floor(this.pokemon.lvl * 0.8));
+            const wildLvlMax = Math.min(this.pokemon.lvl * 1.5, this.pokemon.lvl + 10);
+            const wildLvl = randomBetween(wildLvlMin, wildLvlMax);
+            // const wild = await this.generatePokemon(0, wildLvl);
+            const wild = await this.generatePokemon(0, 5);
             this.wild = wild;
             this.setWorld("battle");
         }
-        // waitForMiliseconds: function(ms) {
-        //     return new Promise(resolve => {
-        //         setTimeout(function() {
-        //             resolve();
-        //         }, ms);
-        //     });
-        // },
-        // async generateAll() {
-        //     const lvl = 100;
-
-        //     for (let id = 1; id <= 151; id++) {
-        //         const pokemonRequest = `https://pokeapi.co/api/v2/pokemon/${id}/`;
-
-        //         const pokemonResponse = await fetch(pokemonRequest);
-        //         const pokemon = await pokemonResponse.json();
-
-        //         const speciesRequest = pokemon.species.url;
-        //         const speciesResponse = await fetch(speciesRequest);
-        //         const species = await speciesResponse.json();
-
-        //         console.log("generating ", pokemon.name);
-        //         this.all[pokemon.name] = new Pokemon(pokemon, species, lvl);
-        //     }
-        // }
-    },
-    created: function() {
-        // this.pokemon = await generatePokemon();
-        // this.wild = generateWild();
-        // this.generateAll();
     }
 };
 </script>

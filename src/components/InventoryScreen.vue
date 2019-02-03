@@ -3,11 +3,15 @@
     <div class="scrollable-area" :style="{bottom:scrollOffset}">
       <InventoryItem
         v-for="item in filteredItems"
-        :item="item.name"
+        :item="item.item.name"
         :quantity="item.quantity"
         :key="item.name"
         @click.native="selectItem(item)"
       />
+      <InventoryItem v-if="itemList.length === 0" item="-" :quantity=0 />
+      <InventoryItem v-if="itemList.length === 0" item="-" :quantity=0 />
+      <InventoryItem v-if="itemList.length === 0" item="-" :quantity=0 />
+      <InventoryItem v-if="itemList.length === 0" item="-" :quantity=0 />
     </div>
     <div class="controls">
       <div class="controls-button up" :class="{'hide':index === 0}" @click="handleNav(-1)">&gt;</div>
@@ -23,6 +27,7 @@
 <script>
 import TextFrame from "./TextFrame";
 import InventoryItem from "./InventoryItem";
+import { itemDB } from "../data/Items";
 
 export default {
     name: "InventoryScreen",
@@ -32,26 +37,17 @@ export default {
     },
     data: function() {
         return {
-            itemList: [
-                { name: "potion", quantity: 10 },
-                { name: "antidote", quantity: 7 },
-                { name: "ether", quantity: 3 },
-                // { name: "elixir", quantity: 13 },
-                // { name: "full heal", quantity: 10 },
-                { name: "ice heal", quantity: 8 },
-                { name: "paralyze heal", quantity: 6 },
-                // { name: "revive", quantity: 2 },
-                // { name: "super potion", quantity: 4 },
-                { name: "awakening", quantity: 13 },
-                { name: "burn heal", quantity: 5 }
-            ],
+            itemList: [],
             index: 0
         };
+    },
+    props: {
+        pokemon: Object
     },
     methods: {
         selectItem: function(item) {
             if (item.quantity >= 1) {
-                this.$emit("itemUsed", item.name);
+                this.$emit("itemUsed", item.item);
                 item.quantity = Math.max(0, item.quantity - 1);
             } else {
                 const index = this.itemList.indexOf(item);
@@ -69,14 +65,33 @@ export default {
         filteredItems: function() {
             return this.itemList.filter(i => i.quantity > 0);
         }
+    },
+    created: function() {
+        let newInv = [];
+
+        if (this.pokemon) {
+            for (let i in this.pokemon.inventory) {
+                const item = this.pokemon.inventory[i];
+                newInv.push({ item: item.item, quantity: item.quantity });
+            }
+        }
+        this.itemList = newInv;
     }
-    //   created: function() {
-    //     console.log("created");
-    //   }
+    // use this for testing
+    // created: function() {
+    //     this.itemList = itemDB.map(i => {
+    //         return { item: i, quantity: 10 };
+    //     });
+    // }
 };
 </script>
 
 <style >
+.wallet {
+    border: solid black 5px;
+    border-bottom: none;
+}
+
 .item-screen {
     display: flex;
     overflow: hidden;

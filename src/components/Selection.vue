@@ -49,7 +49,6 @@ export default {
             this.pokemonName = name;
         },
         selectPokemon: function(id) {
-            console.log("requesting pokemon", id);
             this.$emit("requestPokemon", id);
             this.pokemonList = this.pokemonList.filter(p => p.id === id);
             this.pokemonName = this.pokemonList[0].name;
