@@ -54,8 +54,8 @@ export default {
 }
 
 .move-item:hover {
-    background: black;
-    color: white;
+    background: var(--main-black);
+    color: var(--green-white);
 }
 
 .noHighlight:hover {

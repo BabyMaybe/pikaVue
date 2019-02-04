@@ -27,7 +27,7 @@ export default {
 }
 
 .menu-item:hover {
-    background: black;
-    color: white;
+    background: var(--main-black);
+    color: var(--green-white);
 }
 </style>

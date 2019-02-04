@@ -37,5 +37,8 @@ export default {
     flex-wrap: wrap;
     align-items: stretch;
     justify-content: center;
+    width: 900px;
+    height: 260px;
+    box-sizing: border-box;
 }
 </style>

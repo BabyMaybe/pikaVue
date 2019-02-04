@@ -25,9 +25,9 @@ export default {
     min-width: 150%;
     height: 150%;
     image-rendering: pixelated;
-    /* position: relative;
-    right: 50%;
-    bottom: 50%; */
     pointer-events: none;
+    user-select: none;
+    opacity: 0.85;
+    filter: grayscale(0.25);
 }
 </style>

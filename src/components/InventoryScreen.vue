@@ -87,16 +87,19 @@ export default {
 
 <style >
 .wallet {
-    border: solid black 5px;
+    border: solid var(--main-black) 5px;
     border-bottom: none;
 }
 
 .item-screen {
     display: flex;
     overflow: hidden;
-    height: 250px;
+    width: 900px;
     padding-top: 5px;
     user-select: none;
+    box-sizing: border-box;
+    line-height: 1em;
+    margin-top: -71px;
 }
 
 .scrollable-area {

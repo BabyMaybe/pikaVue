@@ -32,9 +32,6 @@ export default {
             messageText: "first message text STARTS here",
             messageText2: "This is the SECOND message "
         };
-    },
-    props: {
-        // messageText: String
     }
 };
 </script>
@@ -67,7 +64,7 @@ export default {
 }
 
 .box {
-    border: solid black 5px;
+    border: solid var(--main-black) 5px;
     height: 50px;
     width: 50px;
     box-sizing: border-box;

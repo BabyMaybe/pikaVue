@@ -25,7 +25,7 @@ export default {
 
 <style scoped>
 .pokeball {
-    border: solid black 5px;
+    border: solid var(--main-black) 5px;
     height: 130px;
     width: 130px;
     border-radius: 50%;
@@ -41,19 +41,19 @@ export default {
 
 .pokeball::before {
     display: block;
-    background: white;
+    background: var(--green-white);
     content: "";
     width: 100%;
     height: 100%;
     position: absolute;
     top: 65px;
-    border-top: solid black 5px;
+    border-top: solid var(--main-black) 5px;
 }
 
 .pokeball-dot {
     padding: 8px;
-    background: white;
-    border: solid black 5px;
+    background: var(--green-white);
+    border: solid var(--main-black) 5px;
     border-radius: 50%;
     z-index: 1;
     display: flex;
@@ -65,9 +65,9 @@ export default {
 }
 
 .pokeball-dot::before {
-    border: solid black 3px;
+    border: solid var(--main-black) 3px;
     border-radius: 50%;
-    background: white;
+    background: var(--green-white);
     width: 25px;
     height: 25px;
     content: "?";
@@ -75,23 +75,23 @@ export default {
     text-align: center;
     text-indent: 4px;
     line-height: 28px;
-    color: white;
+    color: var(--green-white);
 }
 
 .red:hover {
-    box-shadow: #e02b2b 0 0 100px;
+    box-shadow: #e02b2b 0 0 150px;
 }
 .blue:hover {
-    box-shadow: #1689de 0 0 100px;
+    box-shadow: #1689de 0 0 150px;
 }
 .green:hover {
-    box-shadow: #47a047 0 0 100px;
+    box-shadow: #257f08 0 0 150px;
 }
 .yellow:hover {
-    box-shadow: #ffd91a 0 0 100px;
+    box-shadow: #ffd91a 0 0 150px;
 }
 .black:hover {
-    box-shadow: black 0 0 100px;
+    box-shadow: var(--main-black) 0 0 150px;
 }
 
 .red:hover > .pokeball-dot::before {
@@ -101,12 +101,12 @@ export default {
     background: #1689de;
 }
 .green:hover > .pokeball-dot::before {
-    background: #47a047;
+    background: #257f08;
 }
 .yellow:hover > .pokeball-dot::before {
     background: #ffd91a;
 }
 .black:hover > .pokeball-dot::before {
-    background: black;
+    background: var(--main-black);
 }
 </style>

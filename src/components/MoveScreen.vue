@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="move-screen-container">
     <TextFrame class="move-screen">
         <MoveItem v-for="move in moves" :key="move.name" :move="move" @moveHover="moveHover"
         @moveLeave="resetDisplay" @useAttock="sendAttack"></MoveItem>
@@ -64,8 +64,12 @@ export default {
     align-items: center;
     font-size: 20px;
     text-transform: uppercase;
-    width: 100%;
+    width: 900px;
     box-sizing: border-box;
+    position: absolute;
+    top: -110px;
+    opacity: 0.9;
+    z-index: 1;
 }
 .info-stat {
     flex: 1;
@@ -76,7 +80,11 @@ export default {
     flex-wrap: wrap;
     align-items: stretch;
     justify-content: space-around;
-    /* width: 100%;
-    box-sizing: border-box; */
+    width: 900px;
+    height: 260px;
+    box-sizing: border-box;
+}
+.move-screen-container {
+    position: relative;
 }
 </style>

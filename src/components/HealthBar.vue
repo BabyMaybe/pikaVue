@@ -13,12 +13,6 @@
 <script>
 export default {
     name: "HealthBar",
-    // data: function() {
-    //     return {
-    //         maxHealth: 100,
-    //         curHealth: 5
-    //     };
-    // },
     props: {
         maxHealth: Number,
         curHealth: Number
@@ -32,16 +26,7 @@ export default {
         updateHealth: function(change) {
             this.curHealth += change;
         }
-    },
-    created: function() {
-        // this.maxHealth = this.hp;
-        // this.curHealth = this.hp;
     }
-    //   created: function() {
-    //     setTimeout(() => {
-    //       this.updateHealth(80);
-    //     }, 1000);
-    //   }
 };
 </script>
 
@@ -57,20 +42,20 @@ export default {
 }
 
 .health-bar {
-    background: red;
+    background: #ec2a0b;
     height: 16px;
     flex: 1;
     margin: 10px;
-    border: solid black 4px;
+    border: solid var(--main-black) 4px;
     border-radius: 10px;
     overflow: hidden;
 }
 
 .health {
-    background: limegreen;
+    background: #45cd2e;
     height: 100%;
     transition: 0.5s all;
-    border-right: solid black 4px;
+    border-right: solid var(--main-black) 4px;
 }
 
 .health-count {
