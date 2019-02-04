@@ -27,7 +27,6 @@
 <script>
 import TextFrame from "./TextFrame";
 import InventoryItem from "./InventoryItem";
-import { itemDB } from "../data/Items";
 
 export default {
     name: "InventoryScreen",

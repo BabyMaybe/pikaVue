@@ -6,11 +6,11 @@
 
     <div class="menu-space">
       <MenuScreen @menuSelected="handleMenuSelected" v-show="menuState.menu" :menuItems="menuItems" />
-      <MoveScreen v-show="menuState.fight" @attack="handleAttack"  :moves="player.moveSet"/>
+      <MoveScreen v-show="menuState.fight" @attack="handleAttack" :moves="player.moveSet"/>
       <InventoryScreen v-show="menuState.item" @itemUsed="handleItem" :pokemon="player"/>
       <PokemonScreen v-show="menuState.pkmn" :pokemon="player"/>
-      <MessageScreen v-show="menuState.msg" :messageText="turn.message" @nextClicked="handleNext" />
-
+      <MessageScreen v-show="menuState.msg && !turn.needsMove" :messageText="turn.message" @nextClicked="handleNext" />
+      <MoveSelection :pokemon="player" v-if="turn.needsMove" @selectMove="deleteMove" />
       <div class="b" @click="setScreen('menu')" :class="{hide: (menuState.menu || menuState.msg)}">
         <span>b</span>
       </div>
@@ -22,6 +22,7 @@
 <script>
 import MenuScreen from "./MenuScreen";
 import MoveScreen from "./MoveScreen";
+import MoveSelection from "./MoveSelection";
 import MessageScreen from "./MessageScreen";
 import InventoryScreen from "./InventoryScreen";
 import PokemonScreen from "./PokemonScreen";
@@ -35,6 +36,7 @@ export default {
     components: {
         MenuScreen,
         MoveScreen,
+        MoveSelection,
         MessageScreen,
         InventoryScreen,
         PokemonScreen,
@@ -50,8 +52,8 @@ export default {
             menuState: {
                 menu: false,
                 fight: false,
-                item: false,
                 pkmn: false,
+                item: false,
                 msg: true
             },
             turn: {
@@ -62,7 +64,8 @@ export default {
                 runAttempts: 0,
                 battleOver: false,
                 playerWon: false,
-                item: null
+                item: null,
+                needsMove: false
             },
             menuItems: [
                 { text: "fight", event: "fightSelected" },
@@ -75,6 +78,9 @@ export default {
     methods: {
         waitForClick: function() {
             return new Promise(resolve => (this.turn.defered = { resolve: resolve }));
+        },
+        waitForMoves: function() {
+            return new Promise(resolve => (this.turn.moveDefered = { resolve: resolve }));
         },
 
         waitForMiliseconds: function(ms) {
@@ -245,14 +251,12 @@ export default {
             this.setScreen("msg");
             this.turn.message = `Used ${item.name.toUpperCase()} on ${this.player.name.toUpperCase()}`;
             await this.waitForClick();
-            console.log(item);
+
             if (item.effect === "heal") {
                 const recovered = this.player.heal(item.amount);
                 if (recovered === 0) {
-                    console.log("didnt recover anything");
                     this.turn.message = this.turn.item.failText(this.player);
                 } else {
-                    console.log("recovered", recovered);
                     this.turn.message = this.turn.item.successText(this.player, recovered);
                 }
             }
@@ -289,11 +293,30 @@ export default {
 
                 //check level up
                 if (this.player.needsLevel()) {
+                    const oldMoves = this.player.availableNaturalMoves();
                     this.player.levelUp();
                     this.turn.message = `${this.player.name.toUpperCase()} grew to level ${this.player.lvl}!`;
+                    const newMoves = this.player.availableNaturalMoves();
                     await this.waitForClick();
-                }
 
+                    if (oldMoves.length !== newMoves.length) {
+                        const newMove = newMoves.pop();
+                        this.turn.message = `${this.player.name.toUpperCase()} learned ${newMove.name}!`;
+                        await this.waitForClick();
+                        if (this.player.moveSet.length < 4) {
+                            this.player.addMove(newMove);
+                        } else {
+                            this.turn.message = `But, ${this.player.name.toUpperCase()}, can't learn more than 4 moves!`;
+                            await this.waitForClick();
+
+                            this.turn.message = `Delete an older move to make room for ${newMove.name}?`;
+                            await this.waitForClick();
+                            this.player.moveSet = newMoves;
+                            this.turn.needsMove = true;
+                            await this.waitForMoves();
+                        }
+                    }
+                }
                 // generate drops
                 await this.generateDrops();
             }
@@ -315,6 +338,26 @@ export default {
             this.$emit("battleOver", "overworld");
 
             //generate new pokemon
+        },
+
+        async deleteMove(move) {
+            this.turn.needsMove = false;
+
+            this.setScreen("msg");
+            this.turn.message = "1, 2 and...";
+            await this.waitForClick();
+
+            this.turn.message = `${this.player.name.toUpperCase()} forgot ${move.move.name}!`;
+            await this.waitForClick();
+
+            this.turn.message = `And Learned ${move.newMove}!`;
+            await this.waitForClick();
+
+            move.moveSet.splice(move.moveSet.indexOf(move.move), 1);
+            this.player.moveSet = move.moveSet;
+
+            let p = this.turn.moveDefered;
+            p.resolve("resolving click!");
         },
 
         async generateDrops() {

@@ -45,7 +45,7 @@ export default {
         async generatePokemon(id, level) {
             const lvl = level || 5;
             const i = id || randomBetween(1, 151);
-            // console.log("id, i", id, i);
+
             const pokemonRequest = `https://pokeapi.co/api/v2/pokemon/${i}/`;
 
             const pokemonResponse = await fetch(pokemonRequest);
@@ -58,14 +58,16 @@ export default {
             return new Pokemon(pokemon, species, lvl);
         },
         async generatePlayer(pkmn) {
-            this.pokemon = await this.generatePokemon(pkmn, 25);
+            this.pokemon = await this.generatePokemon(pkmn, 10);
+            //testing vars
+            // this.pokemon.stats.currentStats.attack = 999;
+            // this.pokemon.xp.xp = 5459;
         },
         async newBattle() {
             const wildLvlMin = Math.max(5, Math.floor(this.pokemon.lvl * 0.8));
             const wildLvlMax = Math.min(this.pokemon.lvl * 1.5, this.pokemon.lvl + 10);
             const wildLvl = randomBetween(wildLvlMin, wildLvlMax);
-            // const wild = await this.generatePokemon(0, wildLvl);
-            const wild = await this.generatePokemon(0, 25);
+            const wild = await this.generatePokemon(0, wildLvl);
             this.wild = wild;
             this.setWorld("battle");
         }

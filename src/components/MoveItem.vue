@@ -32,10 +32,7 @@ export default {
     methods: {
         use: function() {
             this.used += 1;
-            console.log("pp left:", this.move.pp);
             if (this.move.pp > 0) {
-                console.log("thats enough");
-
                 this.move.pp -= 1;
                 this.$emit("useAttock", this.move);
             }

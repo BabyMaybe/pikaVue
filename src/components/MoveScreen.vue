@@ -40,7 +40,6 @@ export default {
             this.display.ppMax = "--";
         },
         sendAttack: function(move) {
-            console.log("sending attack");
             this.$emit("attack", move);
         }
     },

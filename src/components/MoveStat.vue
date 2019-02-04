@@ -1,16 +1,16 @@
 <template>
-    <div >
-        <div class="move-stat-container" v-if="this.ready">
+    <div>
+        <div class="move-stat-container" >
         <div class="left-col">
-            <div class="move-name">{{name}}</div>
-            <div class="move-stat">Type: {{type}}</div>
-            <div class="move-stat">Category: {{category}}</div>
+            <div class="move-name">{{move.name}}</div>
+            <div class="move-stat">Type: {{move.name}}</div>
+            <div class="move-stat">Category: {{move.damage_class}}</div>
         </div>
 
         <div class="right-col">
-            <div class="move-stat">PP: {{pp}}</div>
-            <div class="move-stat">Power: {{power}}</div>
-            <div class="move-stat">Accuracy: {{accuracy}}%</div>
+            <div class="move-stat">PP: {{move.pp}}</div>
+            <div class="move-stat">Power: {{move.power}}</div>
+            <div class="move-stat">Accuracy: {{move.accuracy}}%</div>
         </div>
         </div>
     </div>
@@ -21,30 +21,7 @@
 export default {
     name: "MoveStat",
     props: {
-        name: String,
-        url: String
-    },
-    data: function() {
-        return {
-            type: "",
-            category: "",
-            pp: "",
-            power: "",
-            accuracy: "",
-            ready: false
-        };
-    },
-    created: function() {
-        fetch(this.url)
-            .then(r => r.json())
-            .then(move => {
-                this.type = move.type.name;
-                this.category = move.damage_class.name;
-                this.pp = move.pp;
-                this.power = move.power;
-                this.accuracy = move.accuracy;
-                this.ready = true;
-            });
+        move: Object
     }
 };
 </script>
@@ -58,6 +35,12 @@ export default {
     padding: 10px;
     width: 600px;
     box-sizing: border-box;
+    cursor: default;
+}
+
+.move-stat-container:hover {
+    background: black;
+    color: white;
 }
 
 .left-col {
@@ -74,10 +57,12 @@ export default {
     font-size: 24px;
     margin-left: -30px;
     margin-bottom: 10px;
+    cursor: default;
 }
 
 .move-stat {
     margin-bottom: 10px;
     text-transform: capitalize;
+    cursor: default;
 }
 </style>
