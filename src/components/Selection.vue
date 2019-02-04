@@ -7,15 +7,8 @@
 
          <h1 :class="{shift: loaded}">{{pokemon ? pokemon.name + " lvl " + pokemon.lvl: pokemonName}} </h1>
 
-
-         <!-- <transition name="grow-in"> -->
-            <MoveSelection :pokemon="pokemon" @letsGo="letsGo" v-if="pokemon" />
-            <!-- <div class="move-selection" v-if="pokemon">
-                <MoveStat v-for="move in pokemon.availableNaturalMoves()" :key="move.name" :name="move.name" :url="move.url" />
-                <div class="lets-go" @click="letsGo">Lets Go!</div>
-            </div> -->
-        <!-- </transition> -->
-            <div class="lets-go" @click="letsGo" v-if="pokemon">Lets Go!</div>
+        <MoveSelection :pokemon="pokemon" @letsGo="letsGo" v-if="pokemon" />
+        <div class="lets-go" @click="letsGo" v-if="pokemon">Lets Go!</div>
 
     </div>
 </div>
@@ -23,14 +16,12 @@
 
 <script>
 import Pokeball from "./Pokeball";
-// import MoveStat from "./MoveStat";
 import MoveSelection from "./MoveSelection";
 
 export default {
     name: "Selection",
     components: {
         Pokeball,
-        // MoveStat,
         MoveSelection
     },
     props: {
@@ -63,11 +54,6 @@ export default {
             this.$emit("battleReady", "overworld");
         }
     }
-    // computed: {
-    //     starterMoves() {
-    //         return this.pokemon.availableMoves().filter(move => move.learnMethod === "level-up");
-    //     }
-    // }
 };
 </script>
 
@@ -78,7 +64,7 @@ h1 {
     transition: all 1s;
 }
 .selection-screen {
-    border: double black 25px;
+    border: double var(--main-black) 25px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -93,7 +79,6 @@ h1 {
 .poke-ball-slide-leave-to {
     opacity: 0;
     transform: translateY(-250px);
-    /* transform: translate(0, -150px); */
     width: 0px;
     height: 0px;
     justify-self: flex-start;
@@ -105,7 +90,7 @@ h1 {
 
 .lets-go {
     font-size: 24px;
-    border: solid black 3px;
+    border: solid var(--main-black) 3px;
     padding: 20px;
     width: 200px;
     margin: 0 auto;
@@ -114,8 +99,8 @@ h1 {
 }
 
 .lets-go:hover {
-    color: white;
-    background: black;
+    color: var(--green-white);
+    background: var(--main-black);
 }
 
 .test {
@@ -127,7 +112,6 @@ h1 {
     justify-content: space-evenly;
     align-items: center;
     flex: 1;
-    /* background: pink; */
     transition: all 1s;
 }
 

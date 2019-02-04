@@ -1,6 +1,5 @@
 <template>
 <div class="overworld">
-    <h1>WELCOME TO THE OVERWORLD</h1>
     <PokeSprite :class="{bounce:!resting}" :url="pokemon.sprites.front"/>
 
     <MenuScreen @menuSelected="handleMenuSelected" v-show="menuState.menu" :menuItems="menuItems" />

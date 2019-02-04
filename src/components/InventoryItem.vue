@@ -8,35 +8,35 @@
 
 <script>
 export default {
-  name: "InventoryItem",
-  props: {
-    item: String,
-    quantity: Number
-  }
+    name: "InventoryItem",
+    props: {
+        item: String,
+        quantity: Number
+    }
 };
 </script>
 
 <style scoped>
 .menu-item {
-  display: flex;
-  box-sizing: border-box;
-  cursor: pointer;
-  padding: 20px;
-  font-size: 24px;
+    display: flex;
+    box-sizing: border-box;
+    cursor: pointer;
+    padding: 20px;
+    font-size: 24px;
 }
 
 .menu-item:hover {
-  background: black;
-  color: white;
+    background: var(--main-black);
+    color: var(--green-white);
 }
 
 .item {
-  flex: 1;
+    flex: 1;
 }
 
 .quantity {
-  width: 65px;
-  text-align: right;
-  margin-left: 20px;
+    width: 65px;
+    text-align: right;
+    margin-left: 20px;
 }
 </style>

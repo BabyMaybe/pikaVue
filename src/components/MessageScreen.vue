@@ -41,18 +41,20 @@ export default {
 
 <style>
 .message-screen {
-    height: 200px;
+    height: 260px;
     position: relative;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 .continue {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
-    animation: blink 4s ease-in-out infinite alternate;
+    bottom: -14px;
+    right: 7px;
+    animation: blink 3s ease-in-out infinite alternate;
     cursor: pointer;
     transform: rotate(90deg);
+    user-select: none;
 }
 
 .p {

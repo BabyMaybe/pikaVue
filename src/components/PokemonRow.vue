@@ -30,11 +30,6 @@ export default {
         player: Boolean,
         img: String
     },
-    data: function() {
-        return {
-            // fainted: false
-        };
-    },
     computed: {
         fainted: function() {
             return this.pokemon.status.fainted;
@@ -44,9 +39,6 @@ export default {
 </script>
 
 <style scoped>
-/* .poke-row-container {
-    overflow: hidden;
-} */
 .poke-row {
     display: flex;
     align-items: flex-start;
@@ -59,13 +51,13 @@ export default {
 }
 
 .wild > .stats {
-    border-left: solid black 5px;
+    border-left: solid var(--main-black) 5px;
 }
 .player {
     align-items: flex-end;
 }
 .player > .stats {
-    border-right: solid black 5px;
+    border-right: solid var(--main-black) 5px;
     order: 1;
 }
 

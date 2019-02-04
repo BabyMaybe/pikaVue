@@ -25,7 +25,7 @@ h1 {
     display: flex;
     flex-direction: column;
     width: 500px;
-    border-bottom: solid black 5px;
+    border-bottom: solid var(--main-black) 5px;
     padding: 5px 20px;
 }
 </style>

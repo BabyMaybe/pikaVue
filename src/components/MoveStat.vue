@@ -31,7 +31,7 @@ export default {
     display: flex;
     justify-content: space-between;
     margin: 10px auto;
-    border: solid black 3px;
+    border: solid var(--main-black) 3px;
     padding: 10px;
     width: 600px;
     box-sizing: border-box;
@@ -39,8 +39,9 @@ export default {
 }
 
 .move-stat-container:hover {
-    background: black;
-    color: white;
+    background: #080907;
+    color: #d2e5b3;
+    opacity: 0.75;
 }
 
 .left-col {

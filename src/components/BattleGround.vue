@@ -11,7 +11,7 @@
       <PokemonScreen v-show="menuState.pkmn" :pokemon="player"/>
       <MessageScreen v-show="menuState.msg && !turn.needsMove" :messageText="turn.message" @nextClicked="handleNext" />
       <MoveSelection :pokemon="player" v-if="turn.needsMove" @selectMove="deleteMove" />
-      <div class="b" @click="setScreen('menu')" :class="{hide: (menuState.menu || menuState.msg)}">
+      <div class="b" @click="setScreen('menu')" :class="{pkmn: menuState.pkmn ,none: (menuState.menu || menuState.msg), inv: menuState.item}">
         <span>b</span>
       </div>
     </div>
@@ -450,6 +450,10 @@ export default {
     visibility: hidden;
 }
 
+.none {
+    display: none !important;
+}
+
 .battleground {
     display: flex;
     flex-direction: column;
@@ -457,14 +461,16 @@ export default {
 
 .menu-space {
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    margin-left: 80px;
-    margin-top: 10px;
+    align-items: center;
+    margin-top: 20px;
+    position: relative;
 }
 
 .b {
     font-size: 32px;
-    border: double black 10px;
+    border: double var(--main-black) 10px;
     border-radius: 50px;
     padding: 10px;
     width: 30px;
@@ -474,24 +480,35 @@ export default {
     align-items: center;
     cursor: pointer;
     user-select: none;
-    margin-left: 10px;
+    background: var(--green-white);
+    margin-bottom: 100px;
+    position: absolute;
+    top: -185px;
+    left: 0;
 }
 
 .b:hover {
-    background: black;
-    color: white;
+    background: var(--main-black);
+    color: var(--green-white);
 }
 
 .b:active {
-    background: #333;
-    border-color: #333;
-    color: white;
+    opacity: 0.8;
+    color: var(--green-white);
 }
 
 .b > span {
     position: relative;
     left: 4px;
     top: 2px;
+}
+
+.b.inv {
+    top: -151px;
+}
+
+.b.pkmn {
+    top: -170px;
 }
 
 @keyframes blink {

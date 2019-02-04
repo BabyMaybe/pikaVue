@@ -76,6 +76,8 @@ export default {
 </script>
 <style>
 .pokeworld {
-    /* background: red; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>

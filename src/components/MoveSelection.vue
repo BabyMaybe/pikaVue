@@ -1,9 +1,7 @@
 <template>
-     <!-- <div class="move-selection" v-if="pokemon"> -->
     <transition-group name="grow-up" tag="div" class="move-selection">
         <MoveStat v-for="move in moveSet" :key="move.name" :move="move" @click.native="handleClick(move)" class="grow-item"/>
     </transition-group>
-    <!-- </div> -->
 </template>
 
 <script>
@@ -75,7 +73,6 @@ export default {
     font-size: inherit;
 }
 .grow-up-leave-active .grow-up-enter-active {
-    /* transition: all 1s; */
     position: absolute;
     pointer-events: none;
 }
