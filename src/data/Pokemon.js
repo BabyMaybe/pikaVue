@@ -132,11 +132,11 @@ class Pokemon {
             .then(data => (moveData = data));
 
         const newMove = new Move(moveData);
-        if (this.moveSet.length < 4) {
-            this.moveSet.push(newMove);
-        } else {
-            // console.log("need to delete moves first");
-        }
+        // if (this.moveSet.length < 4) {
+        this.moveSet.push(newMove);
+        // } else {
+        //     // console.log("need to delete moves first");
+        // }
     }
 
     addRandomMoves() {

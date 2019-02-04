@@ -8,25 +8,30 @@
          <h1 :class="{shift: loaded}">{{pokemon ? pokemon.name + " lvl " + pokemon.lvl: pokemonName}} </h1>
 
 
-         <transition name="grow-in">
-            <div class="move-selection" v-if="pokemon">
+         <!-- <transition name="grow-in"> -->
+            <MoveSelection :pokemon="pokemon" @letsGo="letsGo" v-if="pokemon" />
+            <!-- <div class="move-selection" v-if="pokemon">
                 <MoveStat v-for="move in pokemon.availableNaturalMoves()" :key="move.name" :name="move.name" :url="move.url" />
                 <div class="lets-go" @click="letsGo">Lets Go!</div>
-            </div>
-        </transition>
+            </div> -->
+        <!-- </transition> -->
+            <div class="lets-go" @click="letsGo" v-if="pokemon">Lets Go!</div>
+
     </div>
 </div>
 </template>
 
 <script>
 import Pokeball from "./Pokeball";
-import MoveStat from "./MoveStat";
+// import MoveStat from "./MoveStat";
+import MoveSelection from "./MoveSelection";
 
 export default {
     name: "Selection",
     components: {
         Pokeball,
-        MoveStat
+        // MoveStat,
+        MoveSelection
     },
     props: {
         pokemon: Object
@@ -84,23 +89,6 @@ h1 {
     overflow: hidden;
 }
 
-.move-selection {
-    flex-basis: 100%;
-    transition: all 1s;
-}
-
-.grow-in-enter,
-.grow-in-leave-to {
-    height: 0vh;
-}
-.grow-in-leave,
-.grow-in-enter-to {
-    height: 100vh;
-}
-.grow-in-leave-active .grow-in-enter-active {
-    transition: all 1s;
-}
-
 .poke-ball-slide-enter,
 .poke-ball-slide-leave-to {
     opacity: 0;
@@ -115,8 +103,19 @@ h1 {
     position: absolute;
 }
 
-.poke-ball-slide-leave,
-.poke-ball-slide-enter-to {
+.lets-go {
+    font-size: 24px;
+    border: solid black 3px;
+    padding: 20px;
+    width: 200px;
+    margin: 0 auto;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.lets-go:hover {
+    color: white;
+    background: black;
 }
 
 .test {
@@ -141,20 +140,5 @@ h1 {
 .shift {
     margin-right: 140px;
     transition: all 1s;
-}
-
-.lets-go {
-    font-size: 24px;
-    border: solid black 3px;
-    padding: 20px;
-    width: 200px;
-    margin: 0 auto;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
-.lets-go:hover {
-    color: white;
-    background: black;
 }
 </style>
