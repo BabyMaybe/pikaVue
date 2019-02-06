@@ -1,0 +1,24 @@
+Move Categories
+0 damage - inflicts damage (pound)
+1 ailment - no damage; inflicts status ailment (poison powder)
+2 net-good-stats - no damage; lowers targets stats or raises users stats (sword dance, sand attack)
+3 heal - no damage; heals the user (recover, soft boiled) [only these two]
+4 damage+ailment - inflicts damage; inflicts status ailment (thunderbolt)
+// 5 swagger - no damage; inflicts status ailment; raises targets stats (swagger)// gen 2 +[dont need]
+6 damage+lower - inflicts damage; lowers target stats (bubblebeam)
+// 7 damage+raise - inflicts damage; raises target stats (steel wing // gen 2 +) [dont need]
+8 damage+heal - inflicts damage; absorbs damage done to heal the user (leech life)
+9 ohko - one hit KO (guillotine, horn drill, fissure) [only these three]
+10 whole-field-effect - effect on whole field (haze) [only one]
+11 field-effect -effect on one side of the field (light-screen) [these are all? status]
+12 force-switch - forces target to switch out (whirlwind, roar) [only these two]
+13 unique - unique effect (disable, teleport, mimic, focus energy, metronome, mirror move, transform, splash, rest, conversion, substitute)
+
+[damage, ailment, heal, lower, stats, ohko, whole, field, switch, unique]
+10 keys
+damage/heal already done
+lower/stats/whole/field - all stat changes
+ailment - status
+okho - damage+
+switch - run
+unique - mostly ignore

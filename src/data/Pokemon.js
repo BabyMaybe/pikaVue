@@ -65,6 +65,13 @@ class Pokemon {
                 speed: 0,
                 hp: 0
             },
+            battleStats: {
+                attack: 0,
+                defense: 0,
+                special: 0,
+                speed: 0,
+                hp: 0
+            },
             hp: 0
         };
 
@@ -79,6 +86,26 @@ class Pokemon {
             leeched: false,
             bound: false,
             flinched: false
+        };
+
+        this.statusText = {
+            fainted: `${this.name} fainted!`,
+            poisoned: `${this.name}'s hurt by poison!`,
+            paralyzed: `${this.name} fully paralyzed!`,
+            confused: {
+                start: `${this.name} is confused!`,
+                fail: `It hurt itself in it's confusion!`,
+                success: `${this.name}'s confused no more!`
+            },
+            frozen: `${this.name} is frozen solid!`,
+            burned: `${this.name}'s hurt by the burn!`,
+            asleep: {
+                fail: `${this.name} is fast asleep!`,
+                success: `${this.name} woke up!`
+            },
+            leeched: `LEECH SEED saps ${this.name}!`,
+            bound: `Can't move!`,
+            flinched: `${this.name} flinched!`
         };
 
         this.calculateHealthIV(this.stats.IVs);
@@ -169,6 +196,10 @@ class Pokemon {
         return this.stats.hp === 0;
     }
 
+    canMove() {
+        return !this.status.asleep && !this.status.bound && !this.status.flinched && !this.status.frozen;
+    }
+
     applyStatus(status) {
         this.status[status] = true;
     }
@@ -251,6 +282,21 @@ class Move {
         this.pp = moveData.pp;
         this.ppMax = moveData.pp;
         this.accuracy = moveData.accuracy;
+        this.ailment = {
+            name: moveData.meta.ailment.name,
+            chance: moveData.meta.ailment_chance
+        };
+        this.category = moveData.meta.category.name;
+        this.critRate = moveData.meta.crit_rate;
+        this.drain = moveData.meta.drain;
+        this.flinchChance = moveData.meta.flinch_chance;
+        this.healing = moveData.meta.healing;
+        this.maxHits = moveData.meta.max_hits;
+        this.maxTurns = moveData.meta.max_turns;
+        this.minHits = moveData.meta.min_hits;
+        this.minTurns = moveData.meta.min_turns;
+        this.statChance = moveData.meta.stat_chance;
+        this.priority = moveData.priority;
     }
 
     toString() {

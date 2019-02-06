@@ -4,7 +4,7 @@
         <div class="left-col">
             <div class="move-name">{{move.name}}</div>
             <div class="move-stat">Type: {{move.name}}</div>
-            <div class="move-stat">Category: {{move.damage_class}}</div>
+            <div class="move-stat">Category: {{move.damageClass}}</div>
         </div>
 
         <div class="right-col">

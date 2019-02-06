@@ -155,13 +155,82 @@ export default {
             }
         },
 
+        statusEffects() {
+            // DAMAGE //
+            // poison 1/16 maxHp end of turn
+            // badly poisoned 1/16 damage at end of turn x N turns damaged
+            // burn  1/16 maxHp end of turn .5 x physical damage
+            // curse 25% of maxHP damage every turn
+            // leech seed 1/16 maxHP damage heals attacker grass unafected
+            // HALT //
+            // freeze no move  Ice types connot freeze
+            // paralysis 25% chance to not move .25 * speed same type cannot paralyze
+            // sleep no move lasts 1-7 turns
+            // bound no move lasts 2-5 turns 37.5% 1 or 2 12.5 % 4 or 5 only first attack can crit
+            // confusion 50% chance to hurt self with 40 power typless physical attack no crit possible wears off after 1-4 turns
+            // flinch 1 turn no move
+        },
+
         async battleTurn(attacker, defender, move) {
             if (attacker.checkFaint() || this.turn.battleOver) {
                 return;
             }
+            this.setScreen("msg");
+
+            ///// STATUS CHECKS /////
+            // Cannot move if frozen
+            if (attacker.status.frozen) {
+                this.turn.message = attacker.statusText.frozen;
+                await this.waitForClick();
+                return;
+            }
+
+            // Cannot move if asleep. Sleep lasts 1 less turn
+            if (attacker.status.asleep) {
+                this.turn.message = attacker.statusText.asleep;
+                // TODO deduct 1 sleep turn
+                await this.waitForClick();
+                return;
+            }
+
+            // Cannot move for 1 turn
+            if (attacker.status.flinched) {
+                this.turn.message = attacker.statusText.flinched;
+                attacker.status.flinched = false;
+                await this.waitForClick();
+                return;
+            }
+
+            // Cannot move if bound, lasts 2-5 turns only first turn can crit
+            if (attacker.status.bound) {
+                this.turn.message = attacker.statusText.bound;
+                //TODO deduct 1 from bound
+                await this.waitForClick();
+                return;
+            }
+
+            // 25% chance to not move speed is 25% of max on inflict
+            if (attacker.status.paralyzed && randomBetween(1, 4) === 1) {
+                this.turn.message = attacker.statusText.paralyzed;
+                await this.waitForClick();
+                return;
+            }
+
+            // 50% chance to hurt self lasts 1-4 turns. attack is 40 power physical with no crit
+            if (attacker.status.confused) {
+                this.turn.message = attacker.statusText.confused.start;
+                await this.waitForClick();
+                if (randomBetween(1, 2) === 1) {
+                    this.turn.message = attacker.statusText.confused.fail;
+                    //TODO damage self
+                    await this.waitForClick();
+                    //TODO deduct 1 from confusion
+                    return;
+                }
+            }
+            ///// END STATUS CHECKS /////
 
             this.turn.message = `${attacker.name.toUpperCase()} used ${move.name.toUpperCase()}!`;
-            this.setScreen("msg");
             await this.waitForClick();
 
             //accuracy check
@@ -171,6 +240,7 @@ export default {
                 await this.waitForClick();
                 return;
             }
+
             //calculate damage
             let { damage, crit, typeBonus } = await this.calcAttack(attacker, defender, move);
 
@@ -212,6 +282,33 @@ export default {
                 defender.applyStatus("fainted");
                 this.endBattle();
             }
+
+            ///// DAMAGE STATUS CHECKS /////
+
+            // Poison inflicts 1/16 max health per turn
+            if (attacker.status.poisoned) {
+                this.turn.message = this.player.statusText.poisoned;
+                attacker.damage(Math.floor(attacker.stats.currentStats.hp / 16));
+                await this.waitForClick();
+            }
+
+            // Burn inflicts 1/16 max health per turn alse halves physical damage
+            if (attacker.status.burned) {
+                this.turn.message = attacker.statusText.burned;
+                attacker.damage(Math.floor(attacker.stats.currentStats.hp / 16));
+                await this.waitForClick();
+            }
+
+            // Leech Seed inflicts 1/16 max health per turn alse halves physical damage
+            if (attacker.status.leeched) {
+                this.turn.message = attacker.statusText.leeched;
+                const leech = Math.floor(attacker.stats.currentStats.hp / 16);
+                attacker.damage(leech);
+                defender.heal(leech);
+                await this.waitForClick();
+            }
+
+            ///// END DAMAGE STATUS CHECKS /////
         },
 
         async runTurn() {
@@ -397,7 +494,10 @@ export default {
             // }
             const level = attacker.lvl;
             const power = move.power;
-            const attack = attacker.stats.currentStats.attack;
+            const attack =
+                move.damageClass === "physical"
+                    ? attacker.stats.currentStats.attack
+                    : attacker.stats.currentStats.special;
             const defense = defender.stats.currentStats.defense;
 
             const critChallenge = randomBetween(0, 255);
@@ -407,8 +507,8 @@ export default {
             const rand = (Math.floor(Math.random() * (255 - 217 + 1)) + 217) / 255;
             const STAB = move.type === attacker.type ? 1.5 : 1;
             const typeBonus = await this.calcTypeBonus(move.type, defender.type);
-
-            const modifier = rand * STAB * typeBonus * crit;
+            const burn = attacker.status.burned && move.damageClass === "physical" ? 0.25 : 1;
+            const modifier = rand * STAB * typeBonus * crit * burn;
 
             const damage = Math.round((2 * level / 5 * power * (attack / defense) / 50 + 2) * modifier);
 
@@ -438,6 +538,10 @@ export default {
         }
     },
     created: async function() {
+        // copy current stats into a battle slot for manipulation only inside the battle
+        Object.assign(this.player.stats.battleStats, this.player.stats.currentStats);
+        Object.assign(this.wild.stats.battleStats, this.wild.stats.currentStats);
+
         this.turn.message = `Wild ${this.wild.name} appeared!`;
         await this.waitForClick();
 
