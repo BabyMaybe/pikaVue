@@ -1,10 +1,12 @@
 <template>
   <div id="app" class="hardware">
-      <h1 class="title">Pika<img src="./assets/logo.png" class="logo" alt="v">ue</h1>
+      <h1 class="title">Pika<img src="./assets/logo.png" class="logo" alt="V">ue</h1>
 
       <div class="inset">
         <PokeWorld class="screen"></PokeWorld>
       </div>
+
+      <h1 class="title">Pika<img src="./assets/logo.png" class="logo" alt="V">ue</h1>
   </div>
 </template>
 
@@ -36,47 +38,49 @@ body {
 .hardware {
     background-color: #aeab9d;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
     height: 100vh;
     width: 100vw;
     overflow: hidden;
     box-sizing: border-box;
+    justify-content: center;
 }
 
 .title {
     margin: 0;
-    padding: 0;
-    position: absolute;
-    top: 15px;
     user-select: none;
-    border: double var(--main-black) 11px;
-    padding: 15px 50px;
+    border: double var(--main-black) 7px;
+    padding: 15px 5px;
     border-radius: 100px;
-    line-height: 1.5;
+    font-size: 16px;
+    margin: 0 auto;
+    flex: 0;
+    writing-mode: vertical-lr;
+    text-orientation: upright;
+    letter-spacing: 8px;
+    filter: drop-shadow(-1px 1px rgba(255, 255, 255, 0.4));
 }
 
 .logo {
-    width: 50px;
+    width: 30px;
     margin: 0;
     padding: 0;
+    filter: brightness(0.75) grayscale(0.75);
 }
 
 .inset {
-    border: inset #7c797c 25px;
+    border: inset #7c797c 15px;
     border-radius: 50px;
     background-color: #a1c567;
     overflow: hidden;
-    height: 1000px;
+    height: 900px;
     width: 1000px;
-    max-width: 1000px;
-    max-height: 1000px;
 }
 
 .screen {
     border-radius: 15px;
     height: 100%;
+    flex: 1;
 }
 
 #app {

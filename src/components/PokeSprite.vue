@@ -15,15 +15,15 @@ export default {
 
 <style>
 .poke-sprite {
-    width: 300px;
-    height: 300px;
+    width: 225px;
+    height: 225px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 .poke-sprite-img {
-    min-width: 150%;
-    height: 150%;
+    min-width: 175%;
+    height: 175%;
     image-rendering: pixelated;
     pointer-events: none;
     user-select: none;
