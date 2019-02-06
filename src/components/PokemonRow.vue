@@ -43,9 +43,7 @@ export default {
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    height: 300px;
-    position: relative;
-    right: 0;
+    height: 220px;
     filter: grayscale(0);
     transition: all 1s;
 }

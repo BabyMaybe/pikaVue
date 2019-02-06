@@ -5,15 +5,16 @@
     <PokemonRow :pokemon="player" :player="true" />
 
     <div class="menu-space">
-      <MenuScreen @menuSelected="handleMenuSelected" v-show="menuState.menu" :menuItems="menuItems" />
-      <MoveScreen v-show="menuState.fight" @attack="handleAttack" :moves="player.moveSet"/>
-      <InventoryScreen v-show="menuState.item" @itemUsed="handleItem" :pokemon="player"/>
-      <PokemonScreen v-show="menuState.pkmn" :pokemon="player"/>
-      <MessageScreen v-show="menuState.msg && !turn.needsMove" :messageText="turn.message" @nextClicked="handleNext" />
-      <MoveSelection :pokemon="player" v-if="turn.needsMove" @selectMove="deleteMove" />
-      <div class="b" @click="setScreen('menu')" :class="{pkmn: menuState.pkmn ,none: (menuState.menu || menuState.msg), inv: menuState.item}">
+         <div class="b" @click="setScreen('menu')" :class="{pkmn: menuState.pkmn ,none: (menuState.menu || menuState.msg), inv: menuState.item}">
         <span>b</span>
       </div>
+      <MenuScreen @menuSelected="handleMenuSelected" v-show="menuState.menu" :menuItems="menuItems" />
+      <MoveScreen v-show="menuState.fight" @attack="handleAttack" :moves="player.moveSet"/>
+      <InventoryScreen v-show="menuState.item" @itemUsed="handleItem" :pokemon="player" class="item-fix"/>
+      <PokemonScreen v-show="menuState.pkmn" :pokemon="player" class="pkmn-fix"/>
+      <MessageScreen v-show="menuState.msg && !turn.needsMove" :messageText="turn.message" @nextClicked="handleNext" />
+      <MoveSelection :pokemon="player" v-if="turn.needsMove" @selectMove="deleteMove" />
+
     </div>
 
   </div>
@@ -457,6 +458,8 @@ export default {
 .battleground {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    justify-content: space-around;
 }
 
 .menu-space {
@@ -466,6 +469,14 @@ export default {
     align-items: center;
     margin-top: 20px;
     position: relative;
+}
+
+.item-fix {
+    margin-top: -71px;
+}
+
+.pkmn-fix {
+    margin-top: -107px;
 }
 
 .b {
@@ -481,6 +492,9 @@ export default {
     cursor: pointer;
     user-select: none;
     background: var(--green-white);
+}
+
+.battleground .b {
     margin-bottom: 100px;
     position: absolute;
     top: -185px;
@@ -504,11 +518,11 @@ export default {
 }
 
 .b.inv {
-    top: -151px;
+    top: -147px;
 }
 
 .b.pkmn {
-    top: -170px;
+    top: -183px;
 }
 
 @keyframes blink {

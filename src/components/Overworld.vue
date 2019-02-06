@@ -1,15 +1,24 @@
 <template>
 <div class="overworld">
-    <PokeSprite :class="{bounce:!resting}" :url="pokemon.sprites.front"/>
+<div class="poke-sprite-container">
 
-    <MenuScreen @menuSelected="handleMenuSelected" v-show="menuState.menu" :menuItems="menuItems" />
-    <InventoryScreen v-show="menuState.items" @itemUsed="handleItems" :pokemon="pokemon" />
-    <PokemonScreen v-show="menuState.pkmn" :pokemon="pokemon"/>
-    <MessageScreen v-show="menuState.msg" :messageText="messageText" @nextClicked="handleNext" />
+        <PokeSprite :class="{bounce:!resting}" :url="pokemon.sprites.front"/>
 
-    <div class="b" @click="setScreen('menu')" :class="{hide: (menuState.menu || menuState.msg)}">
-    <span>b</span>
+</div>
+
+    <div class="menu-container">
+
+        <div class="b" @click="setScreen('menu')" :class="{hide: (menuState.menu || menuState.msg)}">
+            <span>b</span>
+        </div>
+
+        <MenuScreen @menuSelected="handleMenuSelected" v-show="menuState.menu" :menuItems="menuItems" />
+        <InventoryScreen v-show="menuState.items" @itemUsed="handleItems" :pokemon="pokemon" />
+        <PokemonScreen v-show="menuState.pkmn" :pokemon="pokemon"/>
+        <MessageScreen v-show="menuState.msg" :messageText="messageText" @nextClicked="handleNext" />
+
     </div>
+
 </div>
 </template>
 
@@ -108,14 +117,33 @@ export default {
 </script>
 
 <style scoped>
-h1 {
-    background: greenyellow;
+.poke-sprite-container {
+    display: flex;
+    flex: 1;
+    align-items: center;
+}
+
+.menu-container {
+    flex: 1;
 }
 
 .overworld {
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    height: 100%;
+    justify-content: space-around;
+    /* justify-content: flex-end; */
+}
+
+.b {
+    /* top: 145px;
+    left: 20px; */
+    position: static;
+    margin: 0;
+    align-self: flex-start;
+    margin-bottom: 10px;
 }
 
 .bounce {

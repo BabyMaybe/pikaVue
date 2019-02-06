@@ -99,7 +99,7 @@ export default {
     user-select: none;
     box-sizing: border-box;
     line-height: 1em;
-    margin-top: -71px;
+    /* margin-top: -71px; */
 }
 
 .scrollable-area {

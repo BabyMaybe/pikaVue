@@ -79,5 +79,6 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 1000px;
 }
 </style>
