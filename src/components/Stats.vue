@@ -18,14 +18,16 @@ export default {
 </script>
 
 <style>
-h1 {
+h1,
+h2 {
     font-weight: normal;
+    margin: 5px 0;
 }
 .stats {
     display: flex;
     flex-direction: column;
-    width: 500px;
-    border-bottom: solid var(--main-black) 5px;
-    padding: 5px 20px;
+    width: 450px;
+    border-bottom: solid var(--main-black) 3px;
+    padding: 10px 20px;
 }
 </style>

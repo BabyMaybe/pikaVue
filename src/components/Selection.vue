@@ -1,5 +1,5 @@
 <template>
-<div>
+
     <div class="selection-screen">
         <transition-group name="poke-ball-slide" tag="div" :class="{basicFlex: true, leftFlex: loaded}">
             <Pokeball v-for="pkmn in pokemonList" :key="pkmn.id" @pokemonSelected="selectPokemon" @nameChange="updateName"  :id="pkmn.id" :name="pkmn.name" :color="pkmn.color" class="test"/>
@@ -11,7 +11,7 @@
         <div class="lets-go" @click="letsGo" v-if="pokemon">Lets Go!</div>
 
     </div>
-</div>
+
 </template>
 
 <script>
@@ -73,6 +73,7 @@ h1 {
     border-width: 25px 0 25px 0;
     margin-top: 25px;
     overflow: hidden;
+    width: 100%;
 }
 
 .poke-ball-slide-enter,
@@ -119,6 +120,7 @@ h1 {
     justify-content: flex-start;
     flex: 0;
     pointer-events: none;
+    width: 100%;
 }
 
 .shift {

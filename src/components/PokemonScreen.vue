@@ -1,5 +1,5 @@
 <template>
-    <div class="spacer">
+    <!-- <div class="spacer"> -->
         <TextFrame class="pokemon-screen">
             <div class="name">
             <span>{{pokemon.name.toUpperCase()}}</span>
@@ -49,7 +49,7 @@
             </tbody>
             </table>
         </TextFrame>
-    </div>
+    <!-- </div> -->
 </template>
 
 <script>
@@ -80,8 +80,8 @@ export default {
 .pokemon-screen {
     width: 900px;
     box-sizing: border-box;
-    position: absolute;
-    top: -90px;
+    /* position: absolute;
+    top: -90px; */
 }
 .name {
     font-size: 24px;
