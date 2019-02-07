@@ -230,7 +230,7 @@ export default {
             }
             ///// END STATUS CHECKS /////
 
-            this.turn.message = `${attacker.name.toUpperCase()} used ${move.name.toUpperCase()}!`;
+            this.turn.message = `${attacker.name} used ${move.name}!`;
             await this.waitForClick();
 
             //accuracy check
@@ -264,26 +264,41 @@ export default {
 
             if (typeBonus === 0) {
                 this.turn.message = "No effect!";
+                    await this.waitForClick();
+                }
+                //display secondary text (status, crit, effictive)
+                this.turn.message = `${move.name} did ${damage} damage!`;
                 await this.waitForClick();
-            }
-            //display secondary text (status, crit, effictive)
-            this.turn.message = `${move.name.toUpperCase()} did ${damage} damage!`;
-            await this.waitForClick();
 
-            //check for faint
+                //check for faint
 
             if (defender.checkFaint()) {
-                if (attacker === this.player) {
-                    this.turn.playerWon = true;
+                    if (attacker === this.player) {
+                        this.turn.playerWon = true;
+                    }
+                    this.turn.message = `${defender.name} fainted!`;
+                    defender.faintTransition = true;
+                    await this.waitForClick();
+                    defender.applyStatus("fainted");
+                    this.endBattle();
                 }
-                this.turn.message = `${defender.name.toUpperCase()} fainted!`;
-                defender.faintTransition = true;
-                await this.waitForClick();
-                defender.applyStatus("fainted");
-                this.endBattle();
             }
 
-            ///// DAMAGE STATUS CHECKS /////
+            // CHECK AILMENT IF STATUS INFLICTING MOVE //
+            if (move.category.includes("ailment")) {
+                const ailmentChallenge = randomBetween(1, 100);
+                if (move.ailment.chance >= ailmentChallenge) {
+                    const statusMsg = defender.applyStatus(move.ailment.name);
+                    this.turn.message = statusMsg;
+                    await this.waitForClick();
+                }
+            }
+
+            // IF STAT AFFECTING MOVE APPLY STAT CHANGES //
+            if (["damage+lower", "net-good-stats", "whole-field-effect", "field-effect"].includes(move.category)) {
+            }
+
+            ///// POST BATTLE DAMAGE STATUS CHECKS /////
 
             // Poison inflicts 1/16 max health per turn
             if (attacker.status.poisoned) {
@@ -347,7 +362,7 @@ export default {
         async itemTurn() {
             const item = this.turn.item;
             this.setScreen("msg");
-            this.turn.message = `Used ${item.name.toUpperCase()} on ${this.player.name.toUpperCase()}`;
+            this.turn.message = `Used ${item.name.toUpperCase()} on ${this.player.name}`;
             await this.waitForClick();
 
             if (item.effect === "heal") {
@@ -386,25 +401,25 @@ export default {
                 const xp = this.player.gainXp(this.wild);
 
                 this.setScreen("msg");
-                this.turn.message = `${this.player.name.toUpperCase()} gained ${xp} EXP. Points!`;
+                this.turn.message = `${this.player.name} gained ${xp} EXP. Points!`;
                 await this.waitForClick();
 
                 //check level up
                 if (this.player.needsLevel()) {
                     const oldMoves = this.player.availableNaturalMoves();
                     this.player.levelUp();
-                    this.turn.message = `${this.player.name.toUpperCase()} grew to level ${this.player.lvl}!`;
+                    this.turn.message = `${this.player.name} grew to level ${this.player.lvl}!`;
                     const newMoves = this.player.availableNaturalMoves();
                     await this.waitForClick();
 
                     if (oldMoves.length !== newMoves.length) {
                         const newMove = newMoves.pop();
-                        this.turn.message = `${this.player.name.toUpperCase()} learned ${newMove.name}!`;
+                        this.turn.message = `${this.player.name} learned ${newMove.name}!`;
                         await this.waitForClick();
                         if (this.player.moveSet.length < 4) {
                             this.player.addMove(newMove);
                         } else {
-                            this.turn.message = `But, ${this.player.name.toUpperCase()}, can't learn more than 4 moves!`;
+                            this.turn.message = `But, ${this.player.name}, can't learn more than 4 moves!`;
                             await this.waitForClick();
 
                             this.turn.message = `Delete an older move to make room for ${newMove.name}?`;
@@ -445,7 +460,7 @@ export default {
             this.turn.message = "1, 2 and...";
             await this.waitForClick();
 
-            this.turn.message = `${this.player.name.toUpperCase()} forgot ${move.move.name}!`;
+            this.turn.message = `${this.player.name} forgot ${move.move.name}!`;
             await this.waitForClick();
 
             this.turn.message = `And Learned ${move.newMove}!`;

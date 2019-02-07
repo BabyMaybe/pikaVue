@@ -5,8 +5,8 @@ export const itemDB = [
         effect: "heal",
         status: "",
         amount: 20,
-        successText: (pokemon, hp) => `${pokemon.name.toUpperCase()} recovered by ${hp}!`,
-        failText: pokemon => `${pokemon.name.toUpperCase()} was already at full health!!`,
+        successText: (pokemon, hp) => `${pokemon.name} recovered by ${hp}!`,
+        failText: pokemon => `${pokemon.name} was already at full health!!`,
         dropChance: 1000
     },
     {
@@ -14,8 +14,8 @@ export const itemDB = [
         effect: "heal",
         status: "",
         amount: 50,
-        successText: (pokemon, hp) => `${pokemon.name.toUpperCase()} recovered by ${hp}!`,
-        failText: pokemon => `${pokemon.name.toUpperCase()} was already at full health!!`,
+        successText: (pokemon, hp) => `${pokemon.name} recovered by ${hp}!`,
+        failText: pokemon => `${pokemon.name} was already at full health!!`,
         dropChance: 100
     },
     {
@@ -23,8 +23,8 @@ export const itemDB = [
         effect: "heal",
         status: "",
         amount: 200,
-        successText: (pokemon, hp) => `${pokemon.name.toUpperCase()} recovered by ${hp}!`,
-        failText: pokemon => `${pokemon.name.toUpperCase()} was already at full health!!`,
+        successText: (pokemon, hp) => `${pokemon.name} recovered by ${hp}!`,
+        failText: pokemon => `${pokemon.name} was already at full health!!`,
         dropChance: 50
     },
     {
@@ -32,8 +32,8 @@ export const itemDB = [
         effect: "heal",
         status: "",
         amount: 1000,
-        successText: (pokemon, hp) => `${pokemon.name.toUpperCase()} recovered by ${hp}!`,
-        failText: pokemon => `${pokemon.name.toUpperCase()} was already at full health!!`,
+        successText: (pokemon, hp) => `${pokemon.name} recovered by ${hp}!`,
+        failText: pokemon => `${pokemon.name} was already at full health!!`,
         dropChance: 10
     },
     {
@@ -41,8 +41,8 @@ export const itemDB = [
         effect: "status",
         status: "poisoned",
         amount: 1,
-        successText: pokemon => `${pokemon.name.toUpperCase()} was cured of poison!`,
-        failText: pokemon => `${pokemon.name.toUpperCase()} wasn't poisoned!`,
+        successText: pokemon => `${pokemon.name} was cured of poison!`,
+        failText: pokemon => `${pokemon.name} wasn't poisoned!`,
         dropChance: 100
     },
     {
@@ -86,8 +86,8 @@ export const itemDB = [
         effect: "status",
         status: "frozen",
         amount: 1,
-        successText: pokemon => `${pokemon.name.toUpperCase()} was defrosted!`,
-        failText: pokemon => `${pokemon.name.toUpperCase()} wasn't frozen!`,
+        successText: pokemon => `${pokemon.name} was defrosted!`,
+        failText: pokemon => `${pokemon.name} wasn't frozen!`,
         dropChance: 50
     },
     {
@@ -95,8 +95,8 @@ export const itemDB = [
         effect: "status",
         status: "paralyzed",
         amount: 1,
-        successText: pokemon => `${pokemon.name.toUpperCase()}'s rid of paralysis!`,
-        failText: pokemon => `${pokemon.name.toUpperCase()} wasn't poisoned!`,
+        successText: pokemon => `${pokemon.name}'s rid of paralysis!`,
+        failText: pokemon => `${pokemon.name} wasn't poisoned!`,
         dropChance: 50
     },
     {
@@ -104,8 +104,8 @@ export const itemDB = [
         effect: "status",
         status: "burned",
         amount: 1,
-        successText: pokemon => `${pokemon.name.toUpperCase()} burn was healed!`,
-        failText: pokemon => `${pokemon.name.toUpperCase()} wasn't burned!`,
+        successText: pokemon => `${pokemon.name} burn was healed!`,
+        failText: pokemon => `${pokemon.name} wasn't burned!`,
         dropChance: 50
     },
     {
@@ -113,8 +113,8 @@ export const itemDB = [
         effect: "status",
         status: "asleep",
         amount: 1,
-        successText: pokemon => `${pokemon.name.toUpperCase()} woke up!`,
-        failText: pokemon => `${pokemon.name.toUpperCase()} wasn't asleep!`,
+        successText: pokemon => `${pokemon.name} woke up!`,
+        failText: pokemon => `${pokemon.name} wasn't asleep!`,
         dropChance: 50
     },
     {
@@ -122,8 +122,8 @@ export const itemDB = [
         effect: "status",
         status: "fainted",
         amount: 1,
-        successText: pokemon => `${pokemon.name.toUpperCase()} came back!`,
-        failText: pokemon => `${pokemon.name.toUpperCase()} wasn't fainted!`,
+        successText: pokemon => `${pokemon.name} came back!`,
+        failText: pokemon => `${pokemon.name} wasn't fainted!`,
         dropChance: 10
     }
 ];
