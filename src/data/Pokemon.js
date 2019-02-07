@@ -139,13 +139,15 @@ class Pokemon {
 
         this.allMoves = pokemon.moves
             .reduce((acc, move) => {
-                const redBlueDetails = move.version_group_details.find(vgd => vgd.version_group.name === "red-blue");
-                if (redBlueDetails) {
+                const redBlueYellowDetails = move.version_group_details.find(vgd => {
+                    return vgd.version_group.name === "red-blue" || vgd.version_group.name === "yellow";
+                });
+                if (redBlueYellowDetails) {
                     const m = {
                         name: move.move.name.toUpperCase(),
                         url: move.move.url,
-                        lvlLearned: redBlueDetails.level_learned_at,
-                        learnMethod: redBlueDetails.move_learn_method.name
+                        lvlLearned: redBlueYellowDetails.level_learned_at,
+                        learnMethod: redBlueYellowDetails.move_learn_method.name
                     };
                     acc.push(m);
                 }
