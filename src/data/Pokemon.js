@@ -89,23 +89,47 @@ class Pokemon {
         };
 
         this.statusText = {
-            fainted: `${this.name} fainted!`,
-            poisoned: `${this.name}'s hurt by poison!`,
-            paralyzed: `${this.name} fully paralyzed!`,
+            fainted: {
+                apply: `${this.name} fainted!`
+            },
+            poisoned: {
+                apply: `${this.name} was poisoned!`,
+                fail: `${this.name}'s hurt by poison!`
+            },
+            paralyzed: {
+                apply: `${this.name} became paralyzed!`,
+                fail: `${this.name}'s fully paralyzed!`
+            },
             confused: {
+                apply: `${this.name} became confused!`,
                 start: `${this.name} is confused!`,
                 fail: `It hurt itself in it's confusion!`,
                 success: `${this.name}'s confused no more!`
             },
-            frozen: `${this.name} is frozen solid!`,
-            burned: `${this.name}'s hurt by the burn!`,
+            frozen: {
+                apply: `${this.name} was frozen solid!`,
+                fail: `${this.name} is frozen solid!`
+            },
+            burned: {
+                apply: `${this.name} was burned!`,
+                fail: `${this.name}'s hurt by the burn!`
+            },
             asleep: {
+                apply: `${this.name} fell asleep!`,
                 fail: `${this.name} is fast asleep!`,
                 success: `${this.name} woke up!`
             },
-            leeched: `LEECH SEED saps ${this.name}!`,
-            bound: `Can't move!`,
-            flinched: `${this.name} flinched!`
+            leeched: {
+                apply: `${this.name} was seeded!`,
+                fail: `LEECH SEED saps ${this.name}!`
+            },
+            bound: {
+                apply: `${this.name} became bound!`,
+                fail: `Can't move!`
+            },
+            flinched: {
+                apply: `${this.name} flinched!`
+            }
         };
 
         this.calculateHealthIV(this.stats.IVs);
