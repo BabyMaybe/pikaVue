@@ -65,12 +65,13 @@ class Pokemon {
                 speed: 0,
                 hp: 0
             },
-            battleStats: {
+            battleMods: {
                 attack: 0,
                 defense: 0,
                 special: 0,
                 speed: 0,
-                hp: 0
+                accuracy: 0,
+                evasion: 0
             },
             hp: 0
         };
@@ -228,6 +229,7 @@ class Pokemon {
 
     applyStatus(status) {
         this.status[status] = true;
+        return this.statusText[status].apply;
     }
 
     heal(num) {
@@ -322,6 +324,10 @@ class Move {
         this.minHits = moveData.meta.min_hits;
         this.minTurns = moveData.meta.min_turns;
         this.statChance = moveData.meta.stat_chance;
+        this.statChange = {
+            name: moveData.stat_changes.stat.name,
+            change: moveData.stat_changes.change
+        };
         this.priority = moveData.priority;
     }
 

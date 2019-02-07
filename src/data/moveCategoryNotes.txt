@@ -1,24 +1,44 @@
 Move Categories
-0 damage - inflicts damage (pound)
-1 ailment - no damage; inflicts status ailment (poison powder)
-2 net-good-stats - no damage; lowers targets stats or raises users stats (sword dance, sand attack)
+0 damage - inflicts damage (pound) [72 moves]
+1 ailment - no damage; inflicts status ailment (sing, supersonic, leech seed, poison powder, stun spore, sleep powder, thunderwave, toxic, hypnosis, confuse ray, glare, poison gas, lovely kiss, spore) [these 14]
+2 net-good-stats - no damage; lowers targets stats or raises users stats (sword dance, sand attack) [22 moves]
 3 heal - no damage; heals the user (recover, soft boiled) [only these two]
-4 damage+ailment - inflicts damage; inflicts status ailment (thunderbolt)
+4 damage+ailment - inflicts damage; inflicts status ailment (thunderbolt) [25 moves]
 // 5 swagger - no damage; inflicts status ailment; raises targets stats (swagger)// gen 2 +[dont need]
-6 damage+lower - inflicts damage; lowers target stats (bubblebeam)
+6 damage+lower - inflicts damage; lowers target stats (acid, bubblebeam, aurora beam, psychic, constrict, bubble) [only these 6]
 // 7 damage+raise - inflicts damage; raises target stats (steel wing // gen 2 +) [dont need]
-8 damage+heal - inflicts damage; absorbs damage done to heal the user (leech life)
-9 ohko - one hit KO (guillotine, horn drill, fissure) [only these three]
-10 whole-field-effect - effect on whole field (haze) [only one]
-11 field-effect -effect on one side of the field (light-screen) [these are all? status]
-12 force-switch - forces target to switch out (whirlwind, roar) [only these two]
-13 unique - unique effect (disable, teleport, mimic, focus energy, metronome, mirror move, transform, splash, rest, conversion, substitute)
+8 damage+heal - inflicts damage; absorbs damage done to heal the user (absorb, mega drain, dream eater, leech life) [only these 4]
+9 ohko - one hit KO (guillotine, horn drill, fissure) [only these 3]
+10 whole-field-effect - effect on whole field (haze) [only 1]
+11 field-effect -effect on one side of the field (mist, light screen, reflect) [only these 3]
+12 force-switch - forces target to switch out (whirlwind, roar) [only these 2]
+13 unique - unique effect (disable, teleport, mimic, focus energy, metronome, mirror move, transform, splash, rest, conversion, substitute) [these 11 moves]
 
 [damage, ailment, heal, lower, stats, ohko, whole, field, switch, unique]
 10 keys
-damage/heal already done
-lower/stats/whole/field - all stat changes
-ailment - status
-okho - damage+
-switch - run
-unique - mostly ignore
+[74] damage/heal already done
+[26] lower/stats/whole/field - all stat changes
+[14] ailment - status
+[03] okho - damage+
+[02] switch - run
+[11] unique - mostly ignore
+[35] combo
+
+[165] total moves
+
+
+damage
+damage+heal
+heal
+ailment //not working properly - use accuracy not ailment_chance maybe type = status check?
+damage+ailment
+
+damage+lower
+net-good-stats
+whole-field-effect
+field-effect
+
+force-switch
+ohko
+
+unique

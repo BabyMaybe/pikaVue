@@ -73,7 +73,45 @@ export default {
                 { text: "pkmn", event: "pkmnSelected" },
                 { text: "item", event: "itemSelected" },
                 { text: "run", event: "runSelected" }
-            ]
+            ],
+            stdStageMultipliers: {
+                "-6": 0.25,
+                "-5": 0.28,
+                "-4": 0.33,
+                "-3": 0.4,
+                "-2": 0.5,
+                "-1": 0.66,
+                "0": 1,
+                "1": 1.5,
+                "2": 2,
+                "3": 2.5,
+                "4": 3,
+                "5": 3.5,
+                "6": 4
+            },
+            evasionStageMultipliers: {
+                "6": 0.25,
+                "5": 0.28,
+                "4": 0.33,
+                "3": 0.4,
+                "2": 0.5,
+                "1": 0.66,
+                "0": 1,
+                "-6": 1.5,
+                "-5": 2,
+                "-4": 2.5,
+                "-3": 3,
+                "-2": 3.5,
+                "-1": 4
+            },
+            multipliers: {
+                attack: this.stdStageMultipliers,
+                defense: this.stdStageMultipliers,
+                special: this.stdStageMultipliers,
+                speed: this.stdStageMultipliers,
+                accuracy: this.stdStageMultipliers,
+                evasion: this.evasionStageMultipliers
+            }
         };
     },
     methods: {
@@ -136,7 +174,7 @@ export default {
                 { pokemon: this.player, move: this.turn.playerMove },
                 { pokemon: this.wild, move: this.turn.wildMove }
             ].sort((a, b) => {
-                b.pokemon.stats.currentStats.speed - a.pokemon.stats.currentStats.speed;
+                return this.calcEffective("speed", b.pokemon) - this.calcEffective("speed", a.pokemon);
             });
 
             // --- pokemon 1 ---
@@ -233,37 +271,41 @@ export default {
             this.turn.message = `${attacker.name} used ${move.name}!`;
             await this.waitForClick();
 
-            //accuracy check
-            const challenge = randomBetween(0, 100);
-            if (challenge > move.accuracy || move.damageClass === "status") {
-                this.turn.message = `${attacker.name.toUpperCase()}'s attack missed!`;
+            // ACCURACY CHECK //
+            const accMultiplier = this.multipliers["accuracy"][attacker.stats.battleMods["accuracy"]];
+            const evade = this.multipliers["evasion"][defender.stats.battleMods["evasion"]] * 100;
+            const accChallenge = randomBetween(0, 100);
+            if (accChallenge > move.accuracy * accMultiplier * evade) {
+                this.turn.message = `${attacker.name}'s attack missed!`;
                 await this.waitForClick();
                 return;
             }
 
-            //calculate damage
-            let { damage, crit, typeBonus } = await this.calcAttack(attacker, defender, move);
+            // DEAL DAMAGE IF DAMAGE INDUCING MOVE //
+            if (move.category.includes("damage")) {
+                //calculate damage
+                let { damage, crit, typeBonus } = await this.calcAttack(attacker, defender, move);
 
-            //apply damage
-            defender.damage(damage);
+                //apply damage
+                defender.damage(damage);
 
-            if (crit > 1) {
-                this.turn.message = "Critical hit!";
-                await this.waitForClick();
-            }
+                if (crit > 1) {
+                    this.turn.message = "Critical hit!";
+                    await this.waitForClick();
+                }
 
-            if (typeBonus > 1) {
-                this.turn.message = "It's super effective!";
-                await this.waitForClick();
-            }
+                if (typeBonus > 1) {
+                    this.turn.message = "It's super effective!";
+                    await this.waitForClick();
+                }
 
-            if (typeBonus < 1 && typeBonus > 0) {
-                this.turn.message = "It's not very effective...";
-                await this.waitForClick();
-            }
+                if (typeBonus < 1 && typeBonus > 0) {
+                    this.turn.message = "It's not very effective...";
+                    await this.waitForClick();
+                }
 
-            if (typeBonus === 0) {
-                this.turn.message = "No effect!";
+                if (typeBonus === 0) {
+                    this.turn.message = "No effect!";
                     await this.waitForClick();
                 }
                 //display secondary text (status, crit, effictive)
@@ -272,7 +314,7 @@ export default {
 
                 //check for faint
 
-            if (defender.checkFaint()) {
+                if (defender.checkFaint()) {
                     if (attacker === this.player) {
                         this.turn.playerWon = true;
                     }
@@ -503,20 +545,33 @@ export default {
             await this.waitForClick();
         },
 
+        calcEffective(stat, pkmn) {
+            const baseStat = pkmn.stats.currentStats[stat];
+            const lookup = this.multipliers[stat];
+            const statStage = pkmn.stats.battleMods[stat];
+            const multiplier = lookup[statStage];
+            return baseStat * multiplier;
+        },
+
         async calcAttack(attacker, defender, move) {
             // if (move.damageClass === "status") {
             //     return { damage: 0, crit: 0, typeBonus: 1 };
             // }
+
             const level = attacker.lvl;
             const power = move.power;
-            const attack =
-                move.damageClass === "physical"
-                    ? attacker.stats.currentStats.attack
-                    : attacker.stats.currentStats.special;
-            const defense = defender.stats.currentStats.defense;
+            let attack;
+            if (move.damageClass === "physical") {
+                attack = this.calcEffective("attack", attacker);
+            }
+            if (move.damageClass === "special") {
+                attack = this.calcEffective("special", attacker);
+            }
+
+            const defense = this.calcEffective("defense", defender);
 
             const critChallenge = randomBetween(0, 255);
-            const T = attacker.stats.baseStats.speed / 2;
+            const T = this.calcEffective("speed", attacker) / 2;
             const crit = critChallenge < T ? (2 * level + 5) / (level + 5) : 1;
 
             const rand = (Math.floor(Math.random() * (255 - 217 + 1)) + 217) / 255;
@@ -554,8 +609,9 @@ export default {
     },
     created: async function() {
         // copy current stats into a battle slot for manipulation only inside the battle
-        Object.assign(this.player.stats.battleStats, this.player.stats.currentStats);
-        Object.assign(this.wild.stats.battleStats, this.wild.stats.currentStats);
+        // Object.assign(this.player.stats.battleStats, this.player.stats.currentStats);
+        // Object.assign(this.wild.stats.battleStats, this.wild.stats.currentStats);
+        // changing this to use the multipliers instead of stats
 
         this.turn.message = `Wild ${this.wild.name} appeared!`;
         await this.waitForClick();
